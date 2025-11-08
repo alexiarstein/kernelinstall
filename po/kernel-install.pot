@@ -1,0 +1,171 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kernel-install package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: kernel-install 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-07 22:00-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: kernel-install.c:22
+msgid "Running"
+msgstr ""
+
+#: kernel-install.c:25
+#, c-format
+msgid " Command failed: %s (exit %d)\n"
+msgstr ""
+
+#: kernel-install.c:34
+#, c-format
+msgid "whiptail not found. Installing...\n"
+msgstr ""
+
+#: kernel-install.c:38
+#, c-format
+msgid "Failed to install whiptail\n"
+msgstr ""
+
+#: kernel-install.c:42
+#, c-format
+msgid "whiptail installed successfully. Restarting application...\n"
+msgstr ""
+
+#: kernel-install.c:48
+msgid "Failed to restart"
+msgstr ""
+
+#: kernel-install.c:62
+msgid "Alexia Kernel Installer"
+msgstr ""
+
+#: kernel-install.c:63
+msgid "Alexia Kernel Installer Version"
+msgstr ""
+
+#: kernel-install.c:64
+msgid ""
+"This program will download, compile and install the latest stable kernel "
+"from kernel.org."
+msgstr ""
+
+#: kernel-install.c:65
+msgid "The process may take up to three hours in some systems."
+msgstr ""
+
+#: kernel-install.c:66
+msgid "Do you wish to continue"
+msgstr ""
+
+#: kernel-install.c:77
+msgid "Cleanup Build Files"
+msgstr ""
+
+#: kernel-install.c:78
+msgid "Do you want to clean up the build files"
+msgstr ""
+
+#: kernel-install.c:90
+msgid "Installation Complete"
+msgstr ""
+
+#: kernel-install.c:91
+msgid "Reboot Now"
+msgstr ""
+
+#: kernel-install.c:92
+msgid "Reboot Later"
+msgstr ""
+
+#: kernel-install.c:93
+msgid "Kernel"
+msgstr ""
+
+#: kernel-install.c:95
+msgid "has been successfully installed"
+msgstr ""
+
+#: kernel-install.c:101
+#, c-format
+msgid "Rebooting system...\n"
+msgstr ""
+
+#: kernel-install.c:105
+msgid "Remember to reboot the machine to boot with the latest kernel"
+msgstr ""
+
+#: kernel-install.c:106
+msgid "Thank you for using my software"
+msgstr ""
+
+#: kernel-install.c:107
+msgid "Please keep it free for everyone"
+msgstr ""
+
+#: kernel-install.c:108
+msgid "Alexia."
+msgstr ""
+
+#: kernel-install.c:122
+#, c-format
+msgid "Could not determine home directory\n"
+msgstr ""
+
+#: kernel-install.c:128
+#, c-format
+msgid "Whiptail installation failed. Continuing with text mode...\n"
+msgstr ""
+
+#: kernel-install.c:134
+#, c-format
+msgid "Installation cancelled by user.\n"
+msgstr ""
+
+#: kernel-install.c:141
+#, c-format
+msgid "Creating build directory: %s\n"
+msgstr ""
+
+#: kernel-install.c:146
+msgid "Failed to create build directory"
+msgstr ""
+
+#: kernel-install.c:151
+#, c-format
+msgid "Installing required packages...\n"
+msgstr ""
+
+#: kernel-install.c:157
+#, c-format
+msgid "Fetching latest kernel version from kernel.org...\n"
+msgstr ""
+
+#: kernel-install.c:171
+#, c-format
+msgid "Could not fetch latest kernel version.\n"
+msgstr ""
+
+#: kernel-install.c:177
+#, c-format
+msgid "Empty version string.\n"
+msgstr ""
+
+#: kernel-install.c:184
+#, c-format
+msgid "Latest stable kernel: %s\n"
+msgstr ""
+
+#: kernel-install.c:232
+#, c-format
+msgid "Build files cleaned up.\n"
+msgstr ""

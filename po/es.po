@@ -1,0 +1,120 @@
+# Spanish translations for kernel-installer package.
+# Copyright (C) 2024 Alexia Michelle
+# This file is distributed under the same license as the kernel-installer package.
+# Alexia Michelle <alexia@goldendoglinux.org>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kernel-installer 1.0.0\n"
+"Report-Msgid-Bugs-To: alexia@goldendoglinux.org\n"
+"POT-Creation-Date: 2024-01-01 00:00+0000\n"
+"PO-Revision-Date: 2024-01-01 00:00+0000\n"
+"Last-Translator: Alexia Michelle <alexia@goldendoglinux.org>\n"
+"Language-Team: Spanish <alexia@goldendoglinux.org>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Running"
+msgstr "Ejecutando"
+
+msgid " Command failed: %s (exit %d)\n"
+msgstr " Comando falló: %s (salida %d)\n"
+
+msgid "whiptail not found. Installing...\n"
+msgstr "whiptail no encontrado. Instalando...\n"
+
+msgid "Failed to install whiptail\n"
+msgstr "Error al instalar whiptail\n"
+
+msgid "whiptail installed successfully. Restarting application...\n"
+msgstr "whiptail instalado correctamente. Reiniciando aplicación...\n"
+
+msgid "Failed to restart"
+msgstr "Error al reiniciar"
+
+msgid "Alexia Kernel Installer"
+msgstr "Instalador de Kernel Alexia"
+
+msgid "Alexia Kernel Installer Version"
+msgstr "Versión del Instalador de Kernel Alexia"
+
+msgid "This program will download, compile and install the latest stable kernel from kernel.org."
+msgstr "Este programa descargará, compilará e instalará el último kernel estable desde kernel.org."
+
+msgid "The process may take up to three hours in some systems."
+msgstr "El proceso puede tomar hasta tres horas en algunos sistemas."
+
+msgid "Do you wish to continue"
+msgstr "¿Desea continuar?"
+
+msgid "Cleanup Build Files"
+msgstr "Limpiar Archivos de Compilación"
+
+msgid "Do you want to clean up the build files"
+msgstr "¿Desea limpiar los archivos de compilación?"
+
+msgid "Installation Complete"
+msgstr "Instalación Completada"
+
+msgid "Reboot Now"
+msgstr "Reiniciar Ahora"
+
+msgid "Reboot Later"
+msgstr "Reiniciar Más Tarde"
+
+msgid "Kernel"
+msgstr "Kernel"
+
+msgid "has been successfully installed"
+msgstr "ha sido instalado exitosamente"
+
+msgid "Rebooting system...\n"
+msgstr "Reiniciando sistema...\n"
+
+msgid "Remember to reboot the machine to boot with the latest kernel"
+msgstr "Recuerde reiniciar la máquina para arrancar con el último kernel"
+
+msgid "Thank you for using my software"
+msgstr "Gracias por usar mi software"
+
+msgid "Please keep it free for everyone"
+msgstr "Por favor manténgalo libre para todos"
+
+msgid "Alexia."
+msgstr "Alexia."
+
+msgid "Could not determine home directory\n"
+msgstr "No se pudo determinar el directorio home\n"
+
+msgid "Whiptail installation failed. Continuing with text mode...\n"
+msgstr "Instalación de whiptail falló. Continuando en modo texto...\n"
+
+msgid "Installation cancelled by user.\n"
+msgstr "Instalación cancelada por el usuario.\n"
+
+msgid "Creating build directory: %s\n"
+msgstr "Creando directorio de compilación: %s\n"
+
+msgid "Failed to create build directory"
+msgstr "Error al crear directorio de compilación"
+
+msgid "Installing required packages...\n"
+msgstr "Instalando paquetes requeridos...\n"
+
+msgid "Fetching latest kernel version from kernel.org...\n"
+msgstr "Obteniendo última versión del kernel desde kernel.org...\n"
+
+msgid "Could not fetch latest kernel version.\n"
+msgstr "No se pudo obtener la última versión del kernel.\n"
+
+msgid "Empty version string.\n"
+msgstr "Cadena de versión vacía.\n"
+
+msgid "Latest stable kernel: %s\n"
+msgstr "Último kernel estable: %s\n"
+
+msgid "Build files cleaned up.\n"
+msgstr "Archivos de compilación limpiados.\n"
