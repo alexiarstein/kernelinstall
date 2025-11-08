@@ -169,7 +169,7 @@ if (mkdir(build_dir, 0755) != 0) {
     run("sudo apt update");
     run("sudo apt install -y "
         "build-essential libncurses-dev bison flex libssl-dev libelf-dev "
-        "bc wget tar xz-utils fakeroot curl git debhelper libdw-dev rsync locales");
+        "bc wget tar xz-utils fakeroot gettext libc6-dev curl git  debhelper libdw-dev rsync locales");
 
     printf(_("Fetching latest kernel version from kernel.org...\n"));
 
