@@ -1,6 +1,19 @@
 # kernelinstall
 Downloads, configures, compiles and installs the latest stable kernel from kernel.org
 
+## Running it:
+
+ 1 Clone the repository
+ 2 ```cd kernelinstall```
+ 3 ```./kernel-install```
+
+## Compiling it:
+
+ 1 Clone the repository
+ 2 ```cd kernelinstall```
+ 3 ```make && sudo make install```
+ 4 run ```kernelinstall```
+
 [EN] 
 
 This is a simple tool that fetches the latest stable kernel release from [kernel.org](https://kernel.org)
