@@ -3,16 +3,16 @@ Downloads, configures, compiles and installs the latest stable kernel from kerne
 
 ## Running it:
 
- 1 Clone the repository
- 2 ```cd kernelinstall```
- 3 ```./kernel-install```
+ * 1 Clone the repository
+ * 2 ```cd kernelinstall```
+ * 3 ```./kernel-install```
 
 ## Compiling it:
 
- 1 Clone the repository
- 2 ```cd kernelinstall```
- 3 ```make && sudo make install```
- 4 run ```kernelinstall```
+ * 1 Clone the repository
+ * 2 ```cd kernelinstall```
+ * 3 ```make && sudo make install```
+ * 4 run ```kernelinstall```
 
 [EN] 
 
