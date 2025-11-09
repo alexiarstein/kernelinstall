@@ -116,7 +116,6 @@ Distro detect_distro() {
     return DISTRO_UNKNOWN;
 }
 
-// ... el resto de tu código se mantiene igual
 
 DistroOperations* get_distro_operations(Distro distro) {
     switch (distro) {
@@ -244,7 +243,6 @@ int main(void) {
         mint_generate_certificate();
     }
 
-    // ... (resto del código común: descargar kernel, configurar, etc. se mantiene igual)
 
     // Descargar la versión más reciente del kernel
     printf(_("Fetching latest kernel version from kernel.org...\n"));
