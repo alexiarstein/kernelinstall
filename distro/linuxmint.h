@@ -12,7 +12,7 @@
 void mint_install_dependencies() {
     run("sudo apt update && sudo apt install -y "
         "build-essential libncurses-dev bison flex libssl-dev libssl-dev libelf-dev "
-        "bc wget tar xz-utils fakeroot curl git debhelper libdw-dev rsync locales "
+        "bc wget tar xz-utils fakeroot curl git debhelper libdw-dev rsync locales gawk gettext"
         "mokutil openssl");
 }
 
