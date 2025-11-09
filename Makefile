@@ -8,15 +8,13 @@ LDFLAGS =
 OBJ = kernel-install.o
 TARGET = kernel-installer
 DISTRO_DIR = distro
-
-# Detectar sistema operativo
-UNAME_S := $(shell uname -s)
+DISTRO_HEADERS = $(DISTRO_DIR)/common.h $(DISTRO_DIR)/debian.h $(DISTRO_DIR)/linuxmint.h
 
 # Reglas de compilación
 $(TARGET): $(OBJ)
 	$(CC) $(OBJ) -o $(TARGET) $(LDFLAGS)
 
-kernel-install.o: kernel-install.c $(DISTRO_DIR)/common.h $(DISTRO_DIR)/debian.h
+kernel-install.o: kernel-install.c $(DISTRO_HEADERS)
 	$(CC) $(CFLAGS) -c kernel-install.c -o kernel-install.o
 
 # Reglas de internacionalización

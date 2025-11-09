@@ -13,6 +13,7 @@
 
 typedef enum {
     DISTRO_DEBIAN,
+    DISTRO_MINT,    // Linux Mint y Ubuntu
     DISTRO_ARCH,
     DISTRO_FEDORA,
     DISTRO_UNKNOWN
@@ -30,5 +31,17 @@ typedef struct {
 // Funciones comunes
 int run(const char *cmd);
 Distro detect_distro();
+DistroOperations* get_distro_operations(Distro distro);
+
+// Funciones de UI
+int check_and_install_whiptail(Distro distro);
+int show_welcome_dialog();
+int ask_cleanup();
+void show_completion_dialog(const char *kernel_version, Distro distro);
+
+// Funciones específicas para Mint
+void mint_generate_certificate();
+int mint_ask_secure_boot_enrollment();
+void mint_enroll_secure_boot_key();
 
 #endif

@@ -15,10 +15,13 @@
 
 #include "distro/common.h"
 #include "distro/debian.h"
+#include "distro/linuxmint.h"
 
 #define APP_VERSION "1.1.0"
 #define _(string) gettext(string)
 #define BUBU "bubu"
+
+// ========== FUNCIONES AUXILIARES QUE FALTAN ==========
 
 int run(const char *cmd) {
     printf("\n %s: %s\n", _("Running"), cmd);
@@ -28,36 +31,6 @@ int run(const char *cmd) {
         exit(EXIT_FAILURE);
     }
     return r;
-}
-
-Distro detect_distro() {
-    FILE *fp = fopen("/etc/os-release", "r");
-    if (!fp) return DISTRO_UNKNOWN;
-    
-    char line[256];
-    while (fgets(line, sizeof(line), fp)) {
-        if (strstr(line, "ID=debian") || strstr(line, "ID=goldendoglinux")) {
-            fclose(fp);
-            return DISTRO_DEBIAN;
-        } else if (strstr(line, "ID=arch")) {
-            fclose(fp);
-            return DISTRO_ARCH;
-        } else if (strstr(line, "ID=fedora")) {
-            fclose(fp);
-            return DISTRO_FEDORA;
-        }
-    }
-    fclose(fp);
-    return DISTRO_UNKNOWN;
-}
-
-DistroOperations* get_distro_operations(Distro distro) {
-    switch (distro) {
-        case DISTRO_DEBIAN:
-            return &DEBIAN_OPS;
-        default:
-            return NULL;
-    }
 }
 
 int check_and_install_whiptail(Distro distro) {
@@ -113,26 +86,93 @@ int ask_cleanup() {
     return result;
 }
 
-void show_completion_dialog(const char *kernel_version) {
+// ========== FIN DE FUNCIONES AUXILIARES ==========
+
+// Tu función detect_distro() aquí...
+Distro detect_distro() {
+    FILE *fp = fopen("/etc/os-release", "r");
+    if (!fp) return DISTRO_UNKNOWN;
+    
+    char line[256];
+    while (fgets(line, sizeof(line), fp)) {
+        if (strstr(line, "ID=linuxmint")) {
+            fclose(fp);
+            return DISTRO_MINT;
+        } else if (strstr(line, "ID=ubuntu")) {
+            fclose(fp);
+            return DISTRO_MINT; // Tratar Ubuntu como Mint para certificados
+        } else if (strstr(line, "ID=debian") || strstr(line, "ID=goldendoglinux")) {
+            fclose(fp);
+            return DISTRO_DEBIAN;
+        } else if (strstr(line, "ID=arch")) {
+            fclose(fp);
+            return DISTRO_ARCH;
+        } else if (strstr(line, "ID=fedora")) {
+            fclose(fp);
+            return DISTRO_FEDORA;
+        }
+    }
+    fclose(fp);
+    return DISTRO_UNKNOWN;
+}
+
+// ... el resto de tu código se mantiene igual
+
+DistroOperations* get_distro_operations(Distro distro) {
+    switch (distro) {
+        case DISTRO_DEBIAN:
+            return &DEBIAN_OPS;
+        case DISTRO_MINT:
+            return &MINT_OPS;
+        default:
+            return NULL;
+    }
+}
+
+// NUEVA FUNCIÓN: Manejar Secure Boot para Mint/Ubuntu
+void handle_secure_boot_enrollment(Distro distro) {
+    if (distro == DISTRO_MINT) {
+        // Generar certificado GoldenDogLinux
+        mint_generate_certificate();
+        
+        // Preguntar si quiere enrolar para Secure Boot
+        if (mint_ask_secure_boot_enrollment() == 0) {
+            mint_enroll_secure_boot_key();
+        } else {
+            printf(_("Secure Boot enrollment skipped.\n"));
+            printf(_("You can enroll the certificate later with: sudo mokutil --import /var/lib/shim-signed/mok/MOK_goldendoglinux.der\n"));
+        }
+    }
+}
+
+void show_completion_dialog(const char *kernel_version, Distro distro) {
     char command[1024];
     snprintf(command, sizeof(command),
              "whiptail --title \"%s\" "
              "--yes-button \"%s\" --no-button \"%s\" "
-             "--yesno \"%s %s.\\n\\n%s.\" 12 60", 
+             "--yesno \"%s %s.\\n\\n%s.\\n\\n"
+             "%s.\" 14 60", 
              _("Installation Complete"),
              _("Reboot Now"),
              _("Reboot Later"),
              _("Kernel"),
              kernel_version,
-             _("has been successfully installed"));
+             _("has been successfully installed"),
+             _("If you enrolled Secure Boot, complete the enrollment during reboot"));
     
     int result = system(command);
     
     if (result == 0) {
         printf(_("Rebooting system...\n"));
+        if (distro == DISTRO_MINT) {
+            printf(_("Remember: If you enrolled Secure Boot, look for the blue MOK Manager screen!\n"));
+        }
         system("sudo reboot");
     } else {
         printf("\n%s\n", _("Remember to reboot the machine to boot with the latest kernel"));
+        if (distro == DISTRO_MINT) {
+            printf("%s\n", _("If you enrolled Secure Boot, complete the enrollment during reboot"));
+        }
         printf("%s\n", _("Thank you for using my software"));
         printf("%s\n", _("Please keep it free for everyone"));
         printf("%s\n", _("Alexia."));
@@ -175,7 +215,7 @@ int main(void) {
         return 0;
     }
 
-    // Crear directorio de build
+    // Crear directorio de build (código igual al anterior)
     char build_dir[512];
     snprintf(build_dir, sizeof(build_dir), "%s/kernel_build", home);
     printf(_("Creating build directory: %s\n"), build_dir);
@@ -195,11 +235,18 @@ int main(void) {
         }
     }
 
-    // Usar las operaciones específicas de la distribución
+    // Instalar dependencias específicas de la distribución
     printf(_("Installing required packages for %s...\n"), ops->name);
     ops->install_dependencies();
 
-    // Descargar la versión más reciente del kernel (parte común)
+    // Para Mint/Ubuntu: generar certificado GoldenDogLinux
+    if (distro == DISTRO_MINT) {
+        mint_generate_certificate();
+    }
+
+    // ... (resto del código común: descargar kernel, configurar, etc. se mantiene igual)
+
+    // Descargar la versión más reciente del kernel
     printf(_("Fetching latest kernel version from kernel.org...\n"));
 
     char tmp_file[512];
@@ -233,7 +280,7 @@ int main(void) {
 
     printf(_("Latest stable kernel: %s\n"), latest);
 
-    // Descargar y extraer el kernel (parte común)
+    // Descargar y extraer el kernel
     char cmd[1024];
     snprintf(cmd, sizeof(cmd),
              "cd %s/kernel_build && "
@@ -245,7 +292,7 @@ int main(void) {
              "cd %s/kernel_build && tar -xf linux-%s.tar.xz", home, latest);
     run(cmd);
 
-    // Configurar el kernel (parte común)
+    // Configurar el kernel
     snprintf(cmd, sizeof(cmd),
              "cd %s/kernel_build/linux-%s && "
              "cp /boot/config-$(uname -r) .config && "
@@ -258,7 +305,7 @@ int main(void) {
              home, latest, TAG);
     run(cmd);
 
-    // Ahora usamos la operación de build e instalación específica
+    // Compilar e instalar usando operaciones específicas
     printf(_("Building and installing kernel for %s...\n"), ops->name);
     ops->build_and_install(home, latest, TAG);
 
@@ -266,7 +313,17 @@ int main(void) {
     printf(_("Updating bootloader for %s...\n"), ops->name);
     ops->update_bootloader();
 
-    // Limpieza (parte común)
+    // Para Mint/Ubuntu: ofrecer enrolamiento Secure Boot
+    if (distro == DISTRO_MINT) {
+        if (mint_ask_secure_boot_enrollment() == 0) {
+            mint_enroll_secure_boot_key();
+        } else {
+            printf(_("Secure Boot enrollment skipped.\n"));
+            printf(_("You can enroll the certificate later with: sudo mokutil --import /var/lib/shim-signed/mok/MOK_goldendoglinux.der\n"));
+        }
+    }
+
+    // Limpieza
     if (ask_cleanup() == 0) {
         snprintf(cmd, sizeof(cmd), "rm -rf %s/kernel_build", home);
         run(cmd);
@@ -275,7 +332,7 @@ int main(void) {
 
     char full_kernel_version[64];
     snprintf(full_kernel_version, sizeof(full_kernel_version), "%s%s", latest, TAG);
-    show_completion_dialog(full_kernel_version);
+    show_completion_dialog(full_kernel_version, distro);
 
     return 0;
 }
