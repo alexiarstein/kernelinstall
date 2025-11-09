@@ -1,8 +1,7 @@
 // Kernel Installer - Control Program
 // This execution wrapper follows the logic of downloading, compiling
 // and installing the latest Linux Kernel from kernel.org
-// also generates the linux image in .deb format
-// Only works for debian-based distros (for now!)
+// Modular version with distro-specific support
 // Author: Alexia Michelle <alexia@goldendoglinux.org>
 // LICENSE: GNU GPL 3.0 (see LICENSE for more info)
 #include <errno.h>
@@ -13,10 +12,14 @@
 #include <sys/stat.h>
 #include <libintl.h>
 #include <locale.h>
-#define APP_VERSION "1.0.0"
+
+#include "distro/common.h"
+#include "distro/debian.h"
+
+#define APP_VERSION "1.1.0"
 #define _(string) gettext(string)
-#define N_(string) string
-#define BUBU "bubu" // No pregunten. Esto esta aquí por un buen motivo.
+#define BUBU "bubu"
+
 int run(const char *cmd) {
     printf("\n %s: %s\n", _("Running"), cmd);
     int r = system(cmd);
@@ -26,24 +29,54 @@ int run(const char *cmd) {
     }
     return r;
 }
-// este engendro llamado aplicación necesita whiptail para el dialogo de bienvenida.
-// si el equipo no tiene whiptail instalado, descargara e instalará el paquete.
-// también reiniciamos la aplicación.
 
-int check_and_install_whiptail() {
+Distro detect_distro() {
+    FILE *fp = fopen("/etc/os-release", "r");
+    if (!fp) return DISTRO_UNKNOWN;
+    
+    char line[256];
+    while (fgets(line, sizeof(line), fp)) {
+        if (strstr(line, "ID=debian") || strstr(line, "ID=goldendoglinux")) {
+            fclose(fp);
+            return DISTRO_DEBIAN;
+        } else if (strstr(line, "ID=arch")) {
+            fclose(fp);
+            return DISTRO_ARCH;
+        } else if (strstr(line, "ID=fedora")) {
+            fclose(fp);
+            return DISTRO_FEDORA;
+        }
+    }
+    fclose(fp);
+    return DISTRO_UNKNOWN;
+}
+
+DistroOperations* get_distro_operations(Distro distro) {
+    switch (distro) {
+        case DISTRO_DEBIAN:
+            return &DEBIAN_OPS;
+        default:
+            return NULL;
+    }
+}
+
+int check_and_install_whiptail(Distro distro) {
     if (system("which whiptail > /dev/null 2>&1") != 0) {
         printf(_("whiptail not found. Installing...\n"));
 
-        if (system("sudo apt update && sudo apt install -y whiptail") != 0) {
+        DistroOperations* ops = get_distro_operations(distro);
+        if (!ops || !ops->get_whiptail_install_cmd) {
+            fprintf(stderr, _("Cannot install whiptail on this distribution\n"));
+            return -1;
+        }
+
+        if (system(ops->get_whiptail_install_cmd()) != 0) {
             fprintf(stderr, _("Failed to install whiptail\n"));
             return -1;
         }
 
         printf(_("whiptail installed successfully. Restarting application...\n"));
-
         execl("/proc/self/exe", "/proc/self/exe", NULL);
-
-        // si por algun motivo pincha el restart.
         perror(_("Failed to restart"));
         return -1;
     }
@@ -65,7 +98,7 @@ int show_welcome_dialog() {
              _("Do you wish to continue"));
     
     int result = system(command);
-    return result; // 0 = OK, 1 = CANCELAR
+    return result;
 }
 
 int ask_cleanup() {
@@ -77,7 +110,7 @@ int ask_cleanup() {
              _("Do you want to clean up the build files"));
     
     int result = system(command);
-    return result; // 0 = si, 1 = no
+    return result;
 }
 
 void show_completion_dialog(const char *kernel_version) {
@@ -107,7 +140,6 @@ void show_completion_dialog(const char *kernel_version) {
 }
 
 int main(void) {
-    // internacionalizacion, creo que lo escribí bien.
     setlocale(LC_ALL, "");
     
     if (bindtextdomain("kernel-install", "./locale") == NULL) {
@@ -123,7 +155,18 @@ int main(void) {
         exit(EXIT_FAILURE);
     }
 
-    if (check_and_install_whiptail() != 0) {
+    // Detectar distribución y obtener operaciones
+    Distro distro = detect_distro();
+    DistroOperations* ops = get_distro_operations(distro);
+    
+    if (!ops) {
+        fprintf(stderr, _("Unsupported Linux distribution. Currently only Debian-based systems are supported.\n"));
+        exit(EXIT_FAILURE);
+    }
+    
+    printf(_("Detected distribution: %s\n"), ops->name);
+    
+    if (check_and_install_whiptail(distro) != 0) {
         fprintf(stderr, _("Whiptail installation failed. Continuing with text mode...\n"));
     }
     
@@ -132,45 +175,31 @@ int main(void) {
         return 0;
     }
 
-// evaluamos un fix ante una potencial vulnerabilidad.
-/*    char build_dir[512];
+    // Crear directorio de build
+    char build_dir[512];
     snprintf(build_dir, sizeof(build_dir), "%s/kernel_build", home);
     printf(_("Creating build directory: %s\n"), build_dir);
-    
-    struct stat st = {0};
-    if (stat(build_dir, &st) == -1) {
-        if (mkdir(build_dir, 0755) != 0) {
+
+    if (mkdir(build_dir, 0755) != 0) {
+        if (errno == EEXIST) {
+            struct stat st;
+            if (stat(build_dir, &st) == 0 && S_ISDIR(st.st_mode)) {
+                // Es un directorio, todo bien
+            } else {
+                fprintf(stderr, _("Path exists but is not a directory: %s\n"), build_dir);
+                exit(EXIT_FAILURE);
+            }
+        } else {
             perror(_("Failed to create build directory"));
             exit(EXIT_FAILURE);
         }
     }
-*/
-char build_dir[512];
-snprintf(build_dir, sizeof(build_dir), "%s/kernel_build", home);
-printf(_("Creating build directory: %s\n"), build_dir);
 
-if (mkdir(build_dir, 0755) != 0) {
-    if (errno == EEXIST) {
-        // Verificar que realmente sea un directorio
-        struct stat st;
-        if (stat(build_dir, &st) == 0 && S_ISDIR(st.st_mode)) {
-            // Es un directorio, todo bien
-        } else {
-            fprintf(stderr, _("Path exists but is not a directory: %s\n"), build_dir);
-            exit(EXIT_FAILURE);
-        }
-    } else {
-        perror(_("Failed to create build directory"));
-        exit(EXIT_FAILURE);
-    }
-}
-// fix exitoso ^^
-    printf(_("Installing required packages...\n"));
-    run("sudo apt update");
-    run("sudo apt install -y "
-        "build-essential libncurses-dev bison flex libssl-dev libelf-dev "
-        "bc wget tar xz-utils fakeroot gettext libc6-dev curl git  debhelper libdw-dev rsync locales");
+    // Usar las operaciones específicas de la distribución
+    printf(_("Installing required packages for %s...\n"), ops->name);
+    ops->install_dependencies();
 
+    // Descargar la versión más reciente del kernel (parte común)
     printf(_("Fetching latest kernel version from kernel.org...\n"));
 
     char tmp_file[512];
@@ -189,39 +218,23 @@ if (mkdir(build_dir, 0755) != 0) {
         exit(EXIT_FAILURE);
     }
 
-// test, reemplazar strcspn por strchr para que sonarqube no se vuelva loquita.
-   /*
- char latest[32];
+    char latest[32];
     if (!fgets(latest, sizeof(latest), f)) {
         fprintf(stderr, _("Empty version string.\n"));
         fclose(f);
         exit(EXIT_FAILURE);
     }
     fclose(f);
-    latest[strcspn(latest, "\n")] = 0; 
-*/
 
-char latest[32];
-if (!fgets(latest, sizeof(latest), f)) {
-    fprintf(stderr, _("Empty version string.\n"));
-    fclose(f);
-    exit(EXIT_FAILURE);
-}
-fclose(f);
-
-// Buscar newline con strchr
-char *newline = strchr(latest, '\n');
-if (newline) {
-    *newline = '\0';  // Eliminar newline si existe
-}
+    char *newline = strchr(latest, '\n');
+    if (newline) {
+        *newline = '\0';
+    }
 
     printf(_("Latest stable kernel: %s\n"), latest);
 
+    // Descargar y extraer el kernel (parte común)
     char cmd[1024];
-
-// improvement: hace toda la cochinada en el homedir asi no pedimos sudo para ir a /usr/src
-// asegurense de tener mucho espacio en disco para esa parti.
-
     snprintf(cmd, sizeof(cmd),
              "cd %s/kernel_build && "
              "wget -O linux-%s.tar.xz https://cdn.kernel.org/pub/linux/kernel/v%c.x/linux-%s.tar.xz",
@@ -232,6 +245,7 @@ if (newline) {
              "cd %s/kernel_build && tar -xf linux-%s.tar.xz", home, latest);
     run(cmd);
 
+    // Configurar el kernel (parte común)
     snprintf(cmd, sizeof(cmd),
              "cd %s/kernel_build/linux-%s && "
              "cp /boot/config-$(uname -r) .config && "
@@ -244,21 +258,15 @@ if (newline) {
              home, latest, TAG);
     run(cmd);
 
-// compilamos en el home tmb.
-    snprintf(cmd, sizeof(cmd),
-             "cd %s/kernel_build/linux-%s && fakeroot make -j$(nproc) bindeb-pkg",
-             home, latest);
-    run(cmd);
+    // Ahora usamos la operación de build e instalación específica
+    printf(_("Building and installing kernel for %s...\n"), ops->name);
+    ops->build_and_install(home, latest, TAG);
 
-// para instalar la imagen y los headers si necesitamos sudo
-    snprintf(cmd, sizeof(cmd),
-             "cd %s/kernel_build && "
-             "sudo dpkg -i linux-image-%s*%s*.deb linux-headers-%s*%s*.deb",
-             home, latest, TAG, latest, TAG);
-    run(cmd);
+    // Actualizar bootloader
+    printf(_("Updating bootloader for %s...\n"), ops->name);
+    ops->update_bootloader();
 
-    run("sudo update-grub");
-
+    // Limpieza (parte común)
     if (ask_cleanup() == 0) {
         snprintf(cmd, sizeof(cmd), "rm -rf %s/kernel_build", home);
         run(cmd);
@@ -271,12 +279,3 @@ if (newline) {
 
     return 0;
 }
-/*
- *
- * Resta evaluarlo mas en sistemas debian, clones de debian
- * y luego ver como podemos refactorizarlo para que soporte distros
- * del ecosistema rhel y arch.
- *
- * - Alexia.
- *
-*/
