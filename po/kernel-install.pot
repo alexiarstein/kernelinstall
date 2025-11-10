@@ -1,0 +1,305 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-09 21:05-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: kernel-install.c:27
+msgid "Running"
+msgstr ""
+
+#: kernel-install.c:30
+#, c-format
+msgid " Command failed: %s (exit %d)\n"
+msgstr ""
+
+#: kernel-install.c:38
+#, c-format
+msgid "whiptail not found. Installing...\n"
+msgstr ""
+
+#: kernel-install.c:42
+#, c-format
+msgid "Cannot install whiptail on this distribution\n"
+msgstr ""
+
+#: kernel-install.c:47
+#, c-format
+msgid "Failed to install whiptail\n"
+msgstr ""
+
+#: kernel-install.c:51
+#, c-format
+msgid "whiptail installed successfully. Restarting application...\n"
+msgstr ""
+
+#: kernel-install.c:53
+msgid "Failed to restart"
+msgstr ""
+
+#: kernel-install.c:67
+msgid "Alexia Kernel Installer"
+msgstr ""
+
+#: kernel-install.c:68
+msgid "Alexia Kernel Installer Version"
+msgstr ""
+
+#: kernel-install.c:69
+msgid ""
+"This program will download, compile and install the latest stable kernel "
+"from kernel.org."
+msgstr ""
+
+#: kernel-install.c:70
+msgid "The process may take up to three hours in some systems."
+msgstr ""
+
+#: kernel-install.c:71
+msgid "Do you wish to continue"
+msgstr ""
+
+#: kernel-install.c:82
+msgid "Cleanup Build Files"
+msgstr ""
+
+#: kernel-install.c:83
+msgid "Do you want to clean up the build files"
+msgstr ""
+
+#: kernel-install.c:141 kernel-install.c:319
+#, c-format
+msgid "Secure Boot enrollment skipped.\n"
+msgstr ""
+
+#: kernel-install.c:142 kernel-install.c:320
+#, c-format
+msgid ""
+"You can enroll the certificate later with: sudo mokutil --import /var/lib/"
+"shim-signed/mok/MOK_goldendoglinux.der\n"
+msgstr ""
+
+#: kernel-install.c:154
+msgid "Installation Complete"
+msgstr ""
+
+#: kernel-install.c:155
+msgid "Reboot Now"
+msgstr ""
+
+#: kernel-install.c:156
+msgid "Reboot Later"
+msgstr ""
+
+#: kernel-install.c:157
+msgid "Kernel"
+msgstr ""
+
+#: kernel-install.c:159
+msgid "has been successfully installed"
+msgstr ""
+
+#: kernel-install.c:160 kernel-install.c:173
+msgid "If you enrolled Secure Boot, complete the enrollment during reboot"
+msgstr ""
+
+#: kernel-install.c:165
+#, c-format
+msgid "Rebooting system...\n"
+msgstr ""
+
+#: kernel-install.c:167
+#, c-format
+msgid ""
+"Remember: If you enrolled Secure Boot, look for the blue MOK Manager "
+"screen!\n"
+msgstr ""
+
+#: kernel-install.c:171
+msgid "Remember to reboot the machine to boot with the latest kernel"
+msgstr ""
+
+#: kernel-install.c:175
+msgid "Thank you for using my software"
+msgstr ""
+
+#: kernel-install.c:176
+msgid "Please keep it free for everyone"
+msgstr ""
+
+#: kernel-install.c:177
+msgid "Alexia."
+msgstr ""
+
+#: kernel-install.c:193
+#, c-format
+msgid "Could not determine home directory\n"
+msgstr ""
+
+#: kernel-install.c:202
+#, c-format
+msgid ""
+"Unsupported Linux distribution. Currently only Debian-based systems are "
+"supported.\n"
+msgstr ""
+
+#: kernel-install.c:206
+#, c-format
+msgid "Detected distribution: %s\n"
+msgstr ""
+
+#: kernel-install.c:209
+#, c-format
+msgid "Whiptail installation failed. Continuing with text mode...\n"
+msgstr ""
+
+#: kernel-install.c:213
+#, c-format
+msgid "Installation cancelled by user.\n"
+msgstr ""
+
+#: kernel-install.c:220
+#, c-format
+msgid "Creating build directory: %s\n"
+msgstr ""
+
+#: kernel-install.c:228
+#, c-format
+msgid "Path exists but is not a directory: %s\n"
+msgstr ""
+
+#: kernel-install.c:232
+msgid "Failed to create build directory"
+msgstr ""
+
+#: kernel-install.c:238
+#, c-format
+msgid "Installing required packages for %s...\n"
+msgstr ""
+
+#: kernel-install.c:248
+#, c-format
+msgid "Fetching latest kernel version from kernel.org...\n"
+msgstr ""
+
+#: kernel-install.c:262
+#, c-format
+msgid "Could not fetch latest kernel version.\n"
+msgstr ""
+
+#: kernel-install.c:268
+#, c-format
+msgid "Empty version string.\n"
+msgstr ""
+
+#: kernel-install.c:279
+#, c-format
+msgid "Latest stable kernel: %s\n"
+msgstr ""
+
+#: kernel-install.c:307
+#, c-format
+msgid "Building and installing kernel for %s...\n"
+msgstr ""
+
+#: kernel-install.c:311
+#, c-format
+msgid "Updating bootloader for %s...\n"
+msgstr ""
+
+#: kernel-install.c:328
+#, c-format
+msgid "Build files cleaned up.\n"
+msgstr ""
+
+#: distro/linuxmint.h:20
+#, c-format
+msgid "Generating GoldenDogLinux Secure Boot certificate...\n"
+msgstr ""
+
+#: distro/linuxmint.h:38
+#, c-format
+msgid "GoldenDogLinux certificate generated successfully.\n"
+msgstr ""
+
+#: distro/linuxmint.h:49
+msgid "Secure Boot Enrollment"
+msgstr ""
+
+#: distro/linuxmint.h:50
+msgid "Do you want to enroll the GoldenDogLinux certificate for Secure Boot?"
+msgstr ""
+
+#: distro/linuxmint.h:51
+msgid "This will allow your custom kernel to work with Secure Boot enabled."
+msgstr ""
+
+#: distro/linuxmint.h:52
+msgid ""
+"You will be asked to set a password and enroll the key during the next "
+"reboot."
+msgstr ""
+
+#: distro/linuxmint.h:53
+msgid "Continue with enrollment?"
+msgstr ""
+
+#: distro/linuxmint.h:59
+#, c-format
+msgid "Enrolling GoldenDogLinux certificate for Secure Boot...\n"
+msgstr ""
+
+#: distro/linuxmint.h:64
+#, c-format
+msgid ""
+"\n"
+"=== IMPORTANT SECURE BOOT INSTRUCTIONS ===\n"
+msgstr ""
+
+#: distro/linuxmint.h:65
+#, c-format
+msgid "1. You will be asked to set a enrollment password now\n"
+msgstr ""
+
+#: distro/linuxmint.h:66
+#, c-format
+msgid "2. During the next reboot, a blue screen (MOK Manager) will appear\n"
+msgstr ""
+
+#: distro/linuxmint.h:67
+#, c-format
+msgid "3. Select 'Enroll MOK' > 'Continue' > 'Yes' > Enter the password\n"
+msgstr ""
+
+#: distro/linuxmint.h:68
+#, c-format
+msgid "4. Select 'Reboot' to complete the enrollment\n"
+msgstr ""
+
+#: distro/linuxmint.h:69
+#, c-format
+msgid "5. After enrollment, your kernel will work with Secure Boot\n"
+msgstr ""
+
+#: distro/linuxmint.h:70
+#, c-format
+msgid "==========================================\n"
+msgstr ""
+
+#: distro/linuxmint.h:76
+#, c-format
+msgid "Configuring GoldendogLinux Signature...\n"
+msgstr ""
