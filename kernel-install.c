@@ -88,7 +88,7 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
    
     char header_text[256];
     snprintf(header_text, sizeof(header_text), "Alexia Kernel Installer Version %s", APP_VERSION);
-    int header_len = strlen(header_text);
+    int header_len = strnlen(header_text, sizeof(header_text));
     int header_x = (width - header_len) / 2;
     if (header_x < 0) header_x = 0;
     
