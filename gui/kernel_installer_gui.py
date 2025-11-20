@@ -37,6 +37,7 @@ class KernelInstallerGUI(Gtk.Window):
         # Process variable
         self.process = None
         self.installation_running = False
+        self.process_pid = None
         
         # Create the interface
         self.create_ui()
@@ -226,6 +227,15 @@ class KernelInstallerGUI(Gtk.Window):
         installer_path = self.find_installer()
         if installer_path:
             try:
+                def on_child_spawned(terminal, pid, error, user_data):
+                    if error:
+                        self.write_to_terminal(_("Error spawning process: {}\n").format(error.message))
+                        self.installation_running = False
+                        self.start_button.set_sensitive(True)
+                        self.cancel_button.set_sensitive(False)
+                    else:
+                        self.process_pid = pid
+                
                 self.terminal.spawn_async(
                     Vte.PtyFlags.DEFAULT,
                     os.getcwd(),
@@ -236,7 +246,7 @@ class KernelInstallerGUI(Gtk.Window):
                     None,
                     -1,
                     None,
-                    None,
+                    on_child_spawned,
                     None
                 )
             except Exception as e:
@@ -289,8 +299,19 @@ class KernelInstallerGUI(Gtk.Window):
         dialog.destroy()
         
         if response == Gtk.ResponseType.YES:
-            # Try to terminate the process
+            # Kill the process if it's running
+            if self.process_pid:
+                try:
+                    import signal
+                    os.kill(self.process_pid, signal.SIGTERM)
+                    self.write_to_terminal(_("\n*** Installation cancelled by user ***\n"))
+                except ProcessLookupError:
+                    pass  # Process already terminated
+                except Exception as e:
+                    self.write_to_terminal(_("Error terminating process: {}\n").format(str(e)))
+            
             self.installation_running = False
+            self.process_pid = None
             self.start_button.set_sensitive(True)
             self.cancel_button.set_sensitive(False)
             self.progress_bar.set_text(_("Cancelled"))

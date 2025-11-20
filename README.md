@@ -9,7 +9,10 @@ Downloads, configures, compiles and installs the latest stable kernel from kerne
 
 ## Running the GUI:
 
- * 1 Install dependencies: ```sudo apt install python3 python3-gi gir1.2-gtk-3.0 gir1.2-vte-2.91```
+ * 1 After compilation with `./compile.sh`, simply run: ```kernel-installer-gui```
+ 
+Or from source:
+ * 1 Install dependencies (see compilation section below)
  * 2 ```cd gui```
  * 3 ```./run_gui.sh```
 
@@ -17,19 +20,41 @@ Downloads, configures, compiles and installs the latest stable kernel from kerne
 
  * 1 Clone the repository
  * 2 ```cd kernelinstall```
- * 3 ```./compile.sh``` (installs all dependencies automatically)
+ * 3 ```./compile.sh``` (automatically detects your distro and installs all dependencies)
  
- Or manually:
+The `compile.sh` script automatically detects your Linux distribution and installs the required dependencies using the appropriate package manager (apt, pacman, dnf, zypper, or emerge).
+
+**Supported package managers:**
+ * **Debian/Ubuntu/Mint/Soplos**: apt
+ * **Arch/Manjaro/EndeavourOS/CachyOS**: pacman
+ * **Fedora/RHEL/Rocky/Alma/CentOS**: dnf
+ * **openSUSE**: zypper
+ * **Gentoo**: emerge
+
+Or manually:
  * 3 ```make && sudo make install```
  * 4 run ```kernel-installer``` (terminal) or ```kernel-installer-gui``` (GUI)
 
-When compiling from source, be sure to have the required packages installed as these are required. 
+**Manual dependency installation by distro:**
 
-**Quick install of all dependencies (CLI + GUI):**
+Debian/Ubuntu/Mint:
 ```bash
 sudo apt update
 sudo apt install -y build-essential gcc make gettext linux-libc-dev libc6-dev \
     python3 python3-gi gir1.2-gtk-3.0 gir1.2-vte-2.91
+```
+
+Arch/Manjaro/EndeavourOS:
+```bash
+sudo pacman -Syu --noconfirm
+sudo pacman -S --noconfirm base-devel gcc make gettext python python-gobject gtk3 vte3
+```
+
+Fedora/RHEL/Rocky/Alma:
+```bash
+sudo dnf update -y
+sudo dnf install -y gcc make gettext-devel glibc-devel kernel-headers \
+    python3 python3-gobject gtk3 vte291
 ``` 
 
 
@@ -69,19 +94,23 @@ Read the changelog [https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.17.
  * English
  * Spanish
 
+## Features
 
-This is a simple tool that fetches the latest stable kernel release from [kernel.org](https://kernel.org)
-configures it for debian, compiles and installs it.
-
-For now it only works on debian or distros that use debian as their upstream.
+This is a powerful tool that fetches the latest stable kernel release from [kernel.org](https://kernel.org), configures it, compiles and installs it.
 
 **New features:**
- * 🎉 **GUI Interface** with Python/GTK3 (see `gui/` folder)
- * 🎉 **Dracut Support** for systems like Soplos Linux that don't use initramfs-tools
- * 🎉 **Automatic initramfs detection** (dracut, initramfs-tools, mkinitcpio)
+ * 🎉 **GUI Interface** with Python/GTK3 - Modern graphical interface with real-time progress
+ * 🎉 **Multi-Distribution Support** - Works on Debian, Ubuntu, Mint, Arch, Manjaro, Fedora, RHEL and more
+ * 🎉 **Automatic Package Manager Detection** - Automatically uses apt, pacman, dnf, zypper or emerge
+ * 🎉 **Dracut Support** - Full support for dracut initramfs systems (Soplos, Arch, Fedora)
+ * 🎉 **Automatic initramfs detection** - Detects and uses dracut, initramfs-tools, or mkinitcpio
+ * 🎉 **Interactive Compilation** - Choose between CLI and GUI mode after compilation
+ * 🎉 **Process Control** - Cancel button in GUI properly terminates installation
+ * 🎉 **Multi-language** - Full internationalization support (English and Spanish)
 
+## Testing
 
-It needs testing on ubuntu, mint, elementary or some of those. Please create an issue if you are willing to test with the results.
+This installer has been tested on multiple distributions. If you test it on Ubuntu, Mint, Elementary or other distributions, please create an issue with your results to help improve compatibility.
 
 Thanks!
 
