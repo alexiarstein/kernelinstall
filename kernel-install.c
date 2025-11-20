@@ -16,12 +16,15 @@
 #include "distro/common.h"
 #include "distro/debian.h"
 #include "distro/linuxmint.h"
+#include "distro/soplos.h"
+#include "distro/arch.h"
+#include "distro/fedora.h"
 
 #define APP_VERSION "1.1.0"
 #define _(string) gettext(string)
 #define BUBU "bubu"
 
-// ========== FUNCIONES AUXILIARES QUE FALTAN ==========
+// ========== AUXILIARY FUNCTIONS ==========
 
 int run(const char *cmd) {
     printf("\n %s: %s\n", _("Running"), cmd);
@@ -86,7 +89,7 @@ int ask_cleanup() {
     return result;
 }
 
-// ========== FIN DE FUNCIONES AUXILIARES ==========
+// ========== END OF AUXILIARY FUNCTIONS ==========
 
 Distro detect_distro() {
     FILE *fp = fopen("/etc/os-release", "r");
@@ -94,19 +97,22 @@ Distro detect_distro() {
     
     char line[256];
     while (fgets(line, sizeof(line), fp)) {
-        if (strstr(line, "ID=linuxmint")) {
+        if (strstr(line, "ID=soplos")) {
+            fclose(fp);
+            return DISTRO_SOPLOS;
+        } else if (strstr(line, "ID=linuxmint")) {
             fclose(fp);
             return DISTRO_MINT;
         } else if (strstr(line, "ID=ubuntu") || strstr(line, "ID=elementary") || strstr(line, "ID=pop")) {
             fclose(fp);
-            return DISTRO_MINT; // Tratar Ubuntu como Mint para certificados
-        } else if (strstr(line, "ID=debian") || strstr(line, "ID=goldendoglinux") || strstr(line, "ID=soplos")) {
+            return DISTRO_MINT; // Treat Ubuntu as Mint for certificates
+        } else if (strstr(line, "ID=debian") || strstr(line, "ID=goldendoglinux")) {
             fclose(fp);
             return DISTRO_DEBIAN;
-        } else if (strstr(line, "ID=arch")) {
+        } else if (strstr(line, "ID=arch") || strstr(line, "ID=manjaro") || strstr(line, "ID=endeavouros") || strstr(line, "ID=cachyos") || strstr(line, "ID=garuda")) {
             fclose(fp);
             return DISTRO_ARCH;
-        } else if (strstr(line, "ID=fedora")) {
+        } else if (strstr(line, "ID=fedora") || strstr(line, "ID=rocky") || strstr(line, "ID=almalinux") || strstr(line, "ID=centos") || strstr(line, "ID=rhel")) {
             fclose(fp);
             return DISTRO_FEDORA;
         }
@@ -118,22 +124,39 @@ Distro detect_distro() {
 
 DistroOperations* get_distro_operations(Distro distro) {
     switch (distro) {
+        case DISTRO_SOPLOS:
+            return &SOPLOS_OPS;
         case DISTRO_DEBIAN:
             return &DEBIAN_OPS;
         case DISTRO_MINT:
             return &MINT_OPS;
+        case DISTRO_ARCH:
+            return &ARCH_OPS;
+        case DISTRO_FEDORA:
+            return &FEDORA_OPS;
         default:
             return NULL;
     }
 }
 
-// NUEVA FUNCIÓN: Manejar Secure Boot para Mint/Ubuntu
+InitramfsType detect_initramfs() {
+    if (system("which dracut > /dev/null 2>&1") == 0) {
+        return INITRAMFS_DRACUT;
+    } else if (system("which update-initramfs > /dev/null 2>&1") == 0) {
+        return INITRAMFS_TOOLS;
+    } else if (system("which mkinitcpio > /dev/null 2>&1") == 0) {
+        return INITRAMFS_MKINITCPIO;
+    }
+    return INITRAMFS_UNKNOWN;
+}
+
+// NEW FUNCTION: Handle Secure Boot for Mint/Ubuntu
 void handle_secure_boot_enrollment(Distro distro) {
     if (distro == DISTRO_MINT) {
-        // Generar certificado GoldenDogLinux
+        // Generate GoldenDogLinux certificate
         mint_generate_certificate();
         
-        // Preguntar si quiere enrolar para Secure Boot
+        // Ask if user wants to enroll for Secure Boot
         if (mint_ask_secure_boot_enrollment() == 0) {
             mint_enroll_secure_boot_key();
         } else {
@@ -193,7 +216,7 @@ int main(void) {
         exit(EXIT_FAILURE);
     }
 
-    // Detectar distribución y obtener operaciones
+    // Detect distribution and get operations
     Distro distro = detect_distro();
     DistroOperations* ops = get_distro_operations(distro);
     
@@ -221,7 +244,7 @@ int main(void) {
         if (errno == EEXIST) {
             struct stat st;
             if (stat(build_dir, &st) == 0 && S_ISDIR(st.st_mode)) {
-                // Es un directorio, todo bien
+                // It's a directory, all good
             } else {
                 fprintf(stderr, _("Path exists but is not a directory: %s\n"), build_dir);
                 exit(EXIT_FAILURE);
@@ -232,17 +255,17 @@ int main(void) {
         }
     }
 
-    // Instalar dependencias específicas de la distribución
+    // Install distribution-specific dependencies
     printf(_("Installing required packages for %s...\n"), ops->name);
     ops->install_dependencies();
 
-    // Para Mint/Ubuntu: generar certificado GoldenDogLinux
+    // For Mint/Ubuntu: generate GoldenDogLinux certificate
     if (distro == DISTRO_MINT) {
         mint_generate_certificate();
     }
 
 
-    // Descargar la versión más reciente del kernel
+    // Download the latest kernel version
     printf(_("Fetching latest kernel version from kernel.org...\n"));
 
     char tmp_file[512];
@@ -276,7 +299,7 @@ int main(void) {
 
     printf(_("Latest stable kernel: %s\n"), latest);
 
-    // Descargar y extraer el kernel
+    // Download and extract the kernel
     char cmd[1024];
     snprintf(cmd, sizeof(cmd),
              "cd %s/kernel_build && "
@@ -288,7 +311,7 @@ int main(void) {
              "cd %s/kernel_build && tar -xf linux-%s.tar.xz", home, latest);
     run(cmd);
 
-    // Configurar el kernel
+    // Configure the kernel
     snprintf(cmd, sizeof(cmd),
              "cd %s/kernel_build/linux-%s && "
              "cp /boot/config-$(uname -r) .config && "
@@ -301,15 +324,15 @@ int main(void) {
              home, latest, TAG);
     run(cmd);
 
-    // Compilar e instalar usando operaciones específicas
+    // Build and install using specific operations
     printf(_("Building and installing kernel for %s...\n"), ops->name);
     ops->build_and_install(home, latest, TAG);
 
-    // Actualizar bootloader
+    // Update bootloader
     printf(_("Updating bootloader for %s...\n"), ops->name);
     ops->update_bootloader();
 
-    // Para Mint/Ubuntu: ofrecer enrolamiento Secure Boot
+    // For Mint/Ubuntu: offer Secure Boot enrollment
     if (distro == DISTRO_MINT) {
         if (mint_ask_secure_boot_enrollment() == 0) {
             mint_enroll_secure_boot_key();
@@ -319,7 +342,7 @@ int main(void) {
         }
     }
 
-    // Limpieza
+    // Cleanup
     if (ask_cleanup() == 0) {
         snprintf(cmd, sizeof(cmd), "rm -rf %s/kernel_build", home);
         run(cmd);

@@ -1,0 +1,447 @@
+================================================================================
+  KERNEL INSTALLER - CHANGELOG & COLLABORATION REPORT
+  Collaboration between Alexia & Sergi Perich (Soplos Linux)
+  Date: November 20, 2025
+================================================================================
+
+================================================================================
+1. SUMMARY OF CHANGES
+================================================================================
+
+This document details all modifications and improvements made to the Kernel
+Installer project through collaboration between the original author (Alexia)
+and Sergi Perich from Soplos Linux.
+
+================================================================================
+2. NEW FEATURES IMPLEMENTED
+================================================================================
+
+2.1. MULTI-DISTRIBUTION SUPPORT
+--------------------------------
+Added support for 12 Linux distributions across 3 major families:
+
+Debian-based:
+  • Soplos Linux (with dracut support)
+  • Debian 13 & 12
+  • Linux Mint LMDE
+  • Linux Mint & Ubuntu
+  • ElementaryOS
+  • PopOS!
+  • MX Linux
+
+Arch-based:
+  • Arch Linux (with dracut support)
+  • Manjaro
+  • EndeavourOS
+  • CachyOS
+  • Garuda Linux
+
+RHEL-based:
+  • Fedora (with dracut support)
+  • Rocky Linux
+  • AlmaLinux
+  • CentOS Stream
+  • Red Hat Enterprise Linux
+
+2.2. INITRAMFS SYSTEM AUTO-DETECTION
+-------------------------------------
+The program now automatically detects and uses the appropriate initramfs system:
+  • dracut (Soplos, Fedora, Arch, and derivatives)
+  • initramfs-tools (traditional Debian/Ubuntu)
+  • mkinitcpio (Arch Linux)
+
+2.3. GRAPHICAL USER INTERFACE (GUI)
+------------------------------------
+NEW: Python/GTK3 graphical interface
+  • Author: Sergi Perich <info@soploslinux.com>
+  • Real-time VTE terminal integration
+  • System information display (distro, kernel, initramfs)
+  • Animated progress bar
+  • Multi-language support
+  • Installation control (start/cancel/close)
+
+Location: gui/kernel_installer_gui.py
+Launcher: gui/run_gui.sh
+
+2.4. INTERNATIONALIZATION (i18n)
+---------------------------------
+Complete translation system using GNU gettext:
+  • English (base language)
+  • Spanish (92/93 messages - 98.9% complete)
+
+All code, comments, and documentation are in English.
+Translations are managed through .po/.pot files.
+
+================================================================================
+3. TECHNICAL IMPROVEMENTS
+================================================================================
+
+3.1. MODULAR ARCHITECTURE
+--------------------------
+Reorganized code into modular distribution-specific headers:
+
+  distro/common.h      - Common definitions and structures
+  distro/debian.h      - Debian/GoldenDog support
+  distro/linuxmint.h   - Mint/Ubuntu with Secure Boot
+  distro/soplos.h      - Soplos Linux (dracut-based)
+  distro/arch.h        - Arch Linux family
+  distro/fedora.h      - Fedora/RHEL family
+
+3.2. DISTRO OPERATIONS STRUCTURE
+---------------------------------
+Each distribution implements:
+  • install_dependencies() - Package installation
+  • build_and_install() - Kernel compilation & installation
+  • update_bootloader() - GRUB/GRUB2 update
+  • update_initramfs() - Initramfs regeneration
+  • get_whiptail_install_cmd() - Whiptail installation
+
+3.3. PACKAGE MANAGER SUPPORT
+-----------------------------
+  • apt/dpkg - Debian-based systems
+  • pacman - Arch-based systems
+  • dnf/rpm - Fedora/RHEL-based systems
+
+3.4. BUILD SYSTEM IMPROVEMENTS
+-------------------------------
+  • Arch: make install (direct kernel installation)
+  • Debian: bindeb-pkg (creates .deb packages)
+  • Fedora: binrpm-pkg (creates .rpm packages)
+
+================================================================================
+4. NEW FILES CREATED
+================================================================================
+
+4.1. Distribution Support Headers
+----------------------------------
+  distro/soplos.h     - Soplos Linux implementation (dracut + apt)
+  distro/arch.h       - Arch Linux implementation (dracut + pacman)
+  distro/fedora.h     - Fedora/RHEL implementation (dracut + dnf)
+
+4.2. GUI Components
+-------------------
+  gui/kernel_installer_gui.py  - Main GTK3 application (299 lines)
+  gui/run_gui.sh               - GUI launcher with dependency checks
+  gui/README.md                - GUI documentation
+
+4.3. Testing & Documentation
+-----------------------------
+  test_sandbox.sh              - Safe testing environment (190 lines)
+  compile.sh                   - Compilation helper script (renamed from compilar.sh)
+
+4.4. Desktop Integration
+------------------------
+  kernel-installer.desktop     - Desktop entry for GUI launcher
+
+================================================================================
+5. MODIFIED FILES
+================================================================================
+
+5.1. Core Program
+-----------------
+  kernel-install.c
+    • Added DISTRO_SOPLOS, DISTRO_ARCH, DISTRO_FEDORA enums
+    • Implemented detect_initramfs() function
+    • Extended detect_distro() for derivative distributions
+    • Updated get_distro_operations() for new distros
+    • All comments converted to English
+
+5.2. Build System
+-----------------
+  Makefile
+    • Updated DISTRO_HEADERS with new files
+    • Enhanced update-po target for C + Python extraction
+    • Added GUI installation targets
+    • Improved compile-mo target
+
+5.3. Documentation
+------------------
+  README.md
+    • Updated supported distributions list
+    • Added GUI usage instructions
+    • Added language support section
+    • Updated features list
+
+5.4. Internationalization
+-------------------------
+  po/kernel-install.pot  - Updated with all new messages
+  po/es.po               - Complete Spanish translations (92 messages)
+  locale/es/LC_MESSAGES/kernel-install.mo - Compiled translations
+
+================================================================================
+6. CODE QUALITY IMPROVEMENTS
+================================================================================
+
+6.1. Internationalization Compliance
+------------------------------------
+  • ALL code comments converted from Spanish to English
+  • ALL string literals marked for translation with _() macro
+  • Consistent use of gettext in both C and Python
+  • Proper locale directory structure
+
+6.2. Consistent Naming
+----------------------
+  • English function names throughout
+  • English variable names throughout
+  • English documentation
+  • Spanish only in translation files
+
+6.3. Modular Design
+-------------------
+  • Each distro in separate header file
+  • Common interface via DistroOperations struct
+  • Easy to extend with new distributions
+
+================================================================================
+7. USAGE INSTRUCTIONS
+================================================================================
+
+7.1. RUNNING THE PROGRAM (CLI)
+-------------------------------
+Option A - Direct execution (no compilation):
+  $ cd kernelinstall
+  $ ./kernel-installer
+
+Option B - After installation:
+  $ kernel-installer
+
+7.2. RUNNING THE GUI
+--------------------
+Option A - From source:
+  $ cd kernelinstall/gui
+  $ ./run_gui.sh
+
+Option B - After installation:
+  $ kernel-installer-gui
+
+Or from application menu: "Kernel Installer"
+
+7.3. COMPILING FROM SOURCE
+---------------------------
+Option A - Using Makefile (recommended):
+  $ cd kernelinstall
+  $ make
+  $ sudo make install
+  $ kernel-installer
+
+Option B - Using compile.sh script:
+  $ cd kernelinstall
+  $ ./compile.sh
+  (Follow interactive prompts)
+
+7.4. TESTING WITHOUT SYSTEM MODIFICATION
+-----------------------------------------
+Safe testing in sandbox mode:
+  $ cd kernelinstall
+  $ ./test_sandbox.sh
+
+This will:
+  • Verify system dependencies
+  • Detect distribution and initramfs
+  • Compile the program
+  • Run basic validation
+  • NOT modify your system
+
+7.5. UPDATING TRANSLATIONS
+---------------------------
+To update translation files:
+  $ make update-po     # Extract new messages
+  $ nano po/es.po      # Edit translations
+  $ make compile-mo    # Compile to .mo
+
+================================================================================
+8. SYSTEM REQUIREMENTS
+================================================================================
+
+8.1. For CLI Version
+--------------------
+Build dependencies:
+  • gcc, make, gettext
+  • libncurses-dev, bison, flex
+  • libssl-dev, libelf-dev
+  • bc, wget, tar, xz-utils
+
+Runtime dependencies:
+  • whiptail (auto-installed if missing)
+  • System-specific: dracut OR initramfs-tools OR mkinitcpio
+  • GRUB or GRUB2 bootloader
+
+8.2. For GUI Version
+--------------------
+Additional dependencies:
+  • python3 (≥ 3.7)
+  • python3-gi
+  • gir1.2-gtk-3.0
+  • gir1.2-vte-2.91
+
+Install on Debian/Ubuntu/Soplos:
+  $ sudo apt install python3 python3-gi gir1.2-gtk-3.0 gir1.2-vte-2.91
+
+Install on Arch/Manjaro:
+  $ sudo pacman -S python python-gobject gtk3 vte3
+
+Install on Fedora/RHEL:
+  $ sudo dnf install python3 python3-gobject gtk3 vte291
+
+================================================================================
+9. TECHNICAL DETAILS
+================================================================================
+
+9.1. Distribution Detection
+----------------------------
+Detection is based on /etc/os-release parsing:
+  • Primary: ID field (debian, arch, fedora, etc.)
+  • Derivatives: Mapped to parent operations
+  • Fallback: DISTRO_UNKNOWN
+
+9.2. Initramfs Detection
+-------------------------
+Detection order:
+  1. Check for dracut binary
+  2. Check for mkinitcpio binary
+  3. Check for update-initramfs binary
+  4. Fallback: INITRAMFS_UNKNOWN
+
+Priority given to dracut for better hardware support.
+
+9.3. Kernel Build Process
+--------------------------
+Debian-based:
+  1. Download kernel from kernel.org
+  2. Configure with current config
+  3. Build using: fakeroot make bindeb-pkg
+  4. Install with: dpkg -i *.deb
+  5. Generate initramfs (dracut or initramfs-tools)
+  6. Update GRUB
+
+Arch-based:
+  1. Download kernel from kernel.org
+  2. Configure with current config
+  3. Build using: make -j$(nproc)
+  4. Install with: make install, make modules_install
+  5. Generate initramfs with dracut
+  6. Update GRUB
+
+Fedora-based:
+  1. Download kernel from kernel.org
+  2. Configure with current config
+  3. Build using: make binrpm-pkg
+  4. Install with: rpm -ivh *.rpm
+  5. Generate initramfs with dracut
+  6. Update GRUB2
+
+9.4. Secure Boot Support
+-------------------------
+For Ubuntu/Mint systems:
+  • Generates GoldenDogLinux certificate
+  • Optional MOK enrollment
+  • Certificate location: /var/lib/shim-signed/mok/
+  • Interactive enrollment during reboot
+
+================================================================================
+10. AUTHORSHIP & CREDITS
+================================================================================
+
+Original Author:
+  Alexia <alexia@goldendoglinux.org>
+  • Core kernel installer logic
+  • Debian-based support
+  • Whiptail UI
+  • Secure Boot implementation
+
+GUI Development:
+  Sergi Perich <info@soploslinux.com>
+  • Python/GTK3 graphical interface
+  • VTE terminal integration
+  • System detection UI
+  • GUI documentation
+
+Collaboration:
+  • Soplos Linux dracut support
+  • Multi-distribution architecture
+  • Arch Linux support
+  • Fedora/RHEL support
+  • Internationalization system
+  • Code refactoring to English
+
+================================================================================
+11. LICENSE
+================================================================================
+
+GNU General Public License v3.0 (GPL-3.0)
+See LICENSE file for complete terms.
+
+================================================================================
+12. PROJECT STATISTICS
+================================================================================
+
+Code Metrics:
+  • Total lines of code: ~1,500 (C + Python)
+  • Distribution headers: 6 files
+  • Supported distributions: 12
+  • Supported initramfs systems: 3
+  • Translated messages: 92 (English + Spanish)
+  • GUI lines: 299 (Python/GTK3)
+  • Test suite: 190 lines (bash)
+
+File Structure:
+  • C source files: 1 (kernel-install.c)
+  • C header files: 6 (distro/*.h)
+  • Python files: 1 (GUI)
+  • Shell scripts: 3
+  • Makefiles: 1
+  • Documentation: 3 (README files)
+  • Translation files: 3 (.pot + .po + .mo)
+
+================================================================================
+13. FUTURE ENHANCEMENTS (SUGGESTIONS)
+================================================================================
+
+Potential improvements for future versions:
+  • openSUSE/SUSE support (zypper + dracut)
+  • Gentoo support (emerge + dracut)
+  • Kernel version selection in GUI
+  • Custom compilation flags in GUI
+  • Kernel configuration profiles
+  • Automatic kernel updates check
+  • Additional languages (French, German, Portuguese)
+  • Rollback functionality
+  • Kernel patch application support
+
+================================================================================
+14. TESTING CHECKLIST
+================================================================================
+
+Before release, verify:
+  ☐ Compilation succeeds on all target distros
+  ☐ CLI version works (./kernel-installer)
+  ☐ GUI launches without errors
+  ☐ Distribution detection accurate
+  ☐ Initramfs detection accurate
+  ☐ Translations display correctly (LANG=es_ES.UTF-8)
+  ☐ Desktop entry appears in menu
+  ☐ Sandbox test passes
+  ☐ Permissions correct (compile.sh +x, run_gui.sh +x)
+  ☐ README.md up to date
+
+================================================================================
+15. CONTACT & REPOSITORY
+================================================================================
+
+GitHub Repository:
+  https://github.com/alexiarstein/kernelinstall
+
+Issues & Bug Reports:
+  https://github.com/alexiarstein/kernelinstall/issues
+
+Original Author:
+  Alexia <alexia@goldendoglinux.org>
+  GoldenDog Linux Project
+
+GUI Contributor:
+  Sergi Perich <info@soploslinux.com>
+  Soplos Linux Project
+
+================================================================================
+END OF DOCUMENT
+================================================================================

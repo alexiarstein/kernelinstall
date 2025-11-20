@@ -14,23 +14,34 @@
 typedef enum {
     DISTRO_DEBIAN,
     DISTRO_MINT,    // Linux Mint y Ubuntu
+    DISTRO_SOPLOS,  // Soplos Linux
     DISTRO_ARCH,
     DISTRO_FEDORA,
     DISTRO_UNKNOWN
 } Distro;
 
-// Estructura para operaciones de distribución
+// Tipo de sistema initramfs
+typedef enum {
+    INITRAMFS_TOOLS,  // initramfs-tools (Debian/Ubuntu tradicional)
+    INITRAMFS_DRACUT, // dracut (Soplos, Fedora, Arch)
+    INITRAMFS_MKINITCPIO, // mkinitcpio (Arch)
+    INITRAMFS_UNKNOWN
+} InitramfsType;
+
+// Structure for distribution operations
 typedef struct {
     const char* name;
     void (*install_dependencies)();
     void (*build_and_install)(const char* home, const char* version, const char* tag);
     void (*update_bootloader)();
+    void (*update_initramfs)(const char* version);
     const char* (*get_whiptail_install_cmd)();
 } DistroOperations;
 
 // Funciones comunes
 int run(const char *cmd);
 Distro detect_distro();
+InitramfsType detect_initramfs();
 DistroOperations* get_distro_operations(Distro distro);
 
 // Funciones de UI
@@ -39,7 +50,7 @@ int show_welcome_dialog();
 int ask_cleanup();
 void show_completion_dialog(const char *kernel_version, Distro distro);
 
-// Funciones específicas para Mint
+// Mint-specific functions
 void mint_generate_certificate();
 int mint_ask_secure_boot_enrollment();
 void mint_enroll_secure_boot_key();

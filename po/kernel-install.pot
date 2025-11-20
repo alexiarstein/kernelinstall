@@ -8,221 +8,252 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-09 21:05-0300\n"
+"POT-Creation-Date: 2025-11-20 01:59+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: kernel-install.c:27
+#: kernel-install.c:30
 msgid "Running"
 msgstr ""
 
-#: kernel-install.c:30
+#: kernel-install.c:33
 #, c-format
 msgid " Command failed: %s (exit %d)\n"
 msgstr ""
 
-#: kernel-install.c:38
+#: kernel-install.c:41
 #, c-format
 msgid "whiptail not found. Installing...\n"
 msgstr ""
 
-#: kernel-install.c:42
+#: kernel-install.c:45
 #, c-format
 msgid "Cannot install whiptail on this distribution\n"
 msgstr ""
 
-#: kernel-install.c:47
+#: kernel-install.c:50
 #, c-format
 msgid "Failed to install whiptail\n"
 msgstr ""
 
-#: kernel-install.c:51
+#: kernel-install.c:54
 #, c-format
 msgid "whiptail installed successfully. Restarting application...\n"
 msgstr ""
 
-#: kernel-install.c:53
+#: kernel-install.c:56
 msgid "Failed to restart"
 msgstr ""
 
-#: kernel-install.c:67
+#: kernel-install.c:70 gui/kernel_installer_gui.py:32
 msgid "Alexia Kernel Installer"
 msgstr ""
 
-#: kernel-install.c:68
+#: kernel-install.c:71
 msgid "Alexia Kernel Installer Version"
 msgstr ""
 
-#: kernel-install.c:69
+#: kernel-install.c:72
 msgid ""
 "This program will download, compile and install the latest stable kernel "
 "from kernel.org."
 msgstr ""
 
-#: kernel-install.c:70
+#: kernel-install.c:73
 msgid "The process may take up to three hours in some systems."
 msgstr ""
 
-#: kernel-install.c:71
+#: kernel-install.c:74
 msgid "Do you wish to continue"
 msgstr ""
 
-#: kernel-install.c:82
+#: kernel-install.c:85
 msgid "Cleanup Build Files"
 msgstr ""
 
-#: kernel-install.c:83
+#: kernel-install.c:86
 msgid "Do you want to clean up the build files"
 msgstr ""
 
-#: kernel-install.c:141 kernel-install.c:319
+#: kernel-install.c:163 kernel-install.c:340
 #, c-format
 msgid "Secure Boot enrollment skipped.\n"
 msgstr ""
 
-#: kernel-install.c:142 kernel-install.c:320
+#: kernel-install.c:164 kernel-install.c:341
 #, c-format
 msgid ""
 "You can enroll the certificate later with: sudo mokutil --import /var/lib/"
 "shim-signed/mok/MOK_goldendoglinux.der\n"
 msgstr ""
 
-#: kernel-install.c:154
+#: kernel-install.c:176
 msgid "Installation Complete"
 msgstr ""
 
-#: kernel-install.c:155
+#: kernel-install.c:177
 msgid "Reboot Now"
 msgstr ""
 
-#: kernel-install.c:156
+#: kernel-install.c:178
 msgid "Reboot Later"
 msgstr ""
 
-#: kernel-install.c:157
+#: kernel-install.c:179
 msgid "Kernel"
 msgstr ""
 
-#: kernel-install.c:159
+#: kernel-install.c:181
 msgid "has been successfully installed"
 msgstr ""
 
-#: kernel-install.c:160 kernel-install.c:173
+#: kernel-install.c:182 kernel-install.c:195
 msgid "If you enrolled Secure Boot, complete the enrollment during reboot"
 msgstr ""
 
-#: kernel-install.c:165
+#: kernel-install.c:187
 #, c-format
 msgid "Rebooting system...\n"
 msgstr ""
 
-#: kernel-install.c:167
+#: kernel-install.c:189
 #, c-format
 msgid ""
 "Remember: If you enrolled Secure Boot, look for the blue MOK Manager "
 "screen!\n"
 msgstr ""
 
-#: kernel-install.c:171
+#: kernel-install.c:193
 msgid "Remember to reboot the machine to boot with the latest kernel"
 msgstr ""
 
-#: kernel-install.c:175
+#: kernel-install.c:197
 msgid "Thank you for using my software"
 msgstr ""
 
-#: kernel-install.c:176
+#: kernel-install.c:198
 msgid "Please keep it free for everyone"
 msgstr ""
 
-#: kernel-install.c:177
+#: kernel-install.c:199
 msgid "Alexia."
 msgstr ""
 
-#: kernel-install.c:193
+#: kernel-install.c:215
 #, c-format
 msgid "Could not determine home directory\n"
 msgstr ""
 
-#: kernel-install.c:202
+#: kernel-install.c:224
 #, c-format
 msgid ""
 "Unsupported Linux distribution. Currently only Debian-based systems are "
 "supported.\n"
 msgstr ""
 
-#: kernel-install.c:206
+#: kernel-install.c:228
 #, c-format
 msgid "Detected distribution: %s\n"
 msgstr ""
 
-#: kernel-install.c:209
+#: kernel-install.c:231
 #, c-format
 msgid "Whiptail installation failed. Continuing with text mode...\n"
 msgstr ""
 
-#: kernel-install.c:213
+#: kernel-install.c:235
 #, c-format
 msgid "Installation cancelled by user.\n"
 msgstr ""
 
-#: kernel-install.c:220
+#: kernel-install.c:241
 #, c-format
 msgid "Creating build directory: %s\n"
 msgstr ""
 
-#: kernel-install.c:228
+#: kernel-install.c:249
 #, c-format
 msgid "Path exists but is not a directory: %s\n"
 msgstr ""
 
-#: kernel-install.c:232
+#: kernel-install.c:253
 msgid "Failed to create build directory"
 msgstr ""
 
-#: kernel-install.c:238
+#. Install distribution-specific dependencies
+#: kernel-install.c:259
 #, c-format
 msgid "Installing required packages for %s...\n"
 msgstr ""
 
-#: kernel-install.c:248
+#. Download the latest kernel version
+#: kernel-install.c:269
 #, c-format
 msgid "Fetching latest kernel version from kernel.org...\n"
 msgstr ""
 
-#: kernel-install.c:262
+#: kernel-install.c:283
 #, c-format
 msgid "Could not fetch latest kernel version.\n"
 msgstr ""
 
-#: kernel-install.c:268
+#: kernel-install.c:289
 #, c-format
 msgid "Empty version string.\n"
 msgstr ""
 
-#: kernel-install.c:279
+#: kernel-install.c:300
 #, c-format
 msgid "Latest stable kernel: %s\n"
 msgstr ""
 
-#: kernel-install.c:307
+#. Build and install using specific operations
+#: kernel-install.c:328
 #, c-format
 msgid "Building and installing kernel for %s...\n"
 msgstr ""
 
-#: kernel-install.c:311
+#. Update bootloader
+#: kernel-install.c:332
 #, c-format
 msgid "Updating bootloader for %s...\n"
 msgstr ""
 
-#: kernel-install.c:328
+#: kernel-install.c:349
 #, c-format
 msgid "Build files cleaned up.\n"
+msgstr ""
+
+#. Generate initramfs with dracut
+#: distro/arch.h:34
+#, c-format
+msgid "Generating initramfs with dracut for Arch Linux...\n"
+msgstr ""
+
+#: distro/arch.h:45
+#, c-format
+msgid "Updating GRUB for Arch Linux...\n"
+msgstr ""
+
+#: distro/arch.h:51 distro/fedora.h:47 distro/soplos.h:48
+#, c-format
+msgid "Regenerating initramfs with dracut...\n"
+msgstr ""
+
+#. Generate initramfs with dracut
+#: distro/fedora.h:30
+#, c-format
+msgid "Generating initramfs with dracut for Fedora...\n"
+msgstr ""
+
+#: distro/fedora.h:41
+#, c-format
+msgid "Updating GRUB2 for Fedora...\n"
 msgstr ""
 
 #: distro/linuxmint.h:20
@@ -302,4 +333,121 @@ msgstr ""
 #: distro/linuxmint.h:76
 #, c-format
 msgid "Configuring GoldendogLinux Signature...\n"
+msgstr ""
+
+#. Generate initramfs with dracut specifically
+#: distro/soplos.h:30
+#, c-format
+msgid "Generating initramfs with dracut for Soplos Linux...\n"
+msgstr ""
+
+#: distro/soplos.h:42
+#, c-format
+msgid "Updating GRUB for Soplos Linux...\n"
+msgstr ""
+
+#: gui/kernel_installer_gui.py:58
+msgid "Download, compile and install the latest stable kernel from kernel.org"
+msgstr ""
+
+#. System information
+#: gui/kernel_installer_gui.py:68
+msgid "System Information"
+msgstr ""
+
+#: gui/kernel_installer_gui.py:72
+msgid "Detecting distribution..."
+msgstr ""
+
+#: gui/kernel_installer_gui.py:76
+msgid "Detecting initramfs system..."
+msgstr ""
+
+#: gui/kernel_installer_gui.py:80
+msgid "Current kernel: "
+msgstr ""
+
+#. Terminal VTE para mostrar el progreso
+#: gui/kernel_installer_gui.py:88
+msgid "Installation Progress"
+msgstr ""
+
+#: gui/kernel_installer_gui.py:104
+msgid "Ready"
+msgstr ""
+
+#: gui/kernel_installer_gui.py:111
+msgid "Start Installation"
+msgstr ""
+
+#: gui/kernel_installer_gui.py:115
+msgid "Cancel"
+msgstr ""
+
+#: gui/kernel_installer_gui.py:120
+msgid "Close"
+msgstr ""
+
+#: gui/kernel_installer_gui.py:135 gui/kernel_installer_gui.py:172
+msgid "Unknown"
+msgstr ""
+
+#: gui/kernel_installer_gui.py:174
+msgid "Distribution: "
+msgstr ""
+
+#: gui/kernel_installer_gui.py:176
+msgid "Distribution: Unknown"
+msgstr ""
+
+#: gui/kernel_installer_gui.py:186
+msgid "Not detected"
+msgstr ""
+
+#: gui/kernel_installer_gui.py:188
+msgid "Initramfs system: "
+msgstr ""
+
+#: gui/kernel_installer_gui.py:200
+msgid "Start Kernel Installation?"
+msgstr ""
+
+#: gui/kernel_installer_gui.py:203
+msgid ""
+"This process will download, compile and install the latest stable kernel.\n"
+"It may take several hours depending on your system.\n"
+"\n"
+"Do you want to continue?"
+msgstr ""
+
+#: gui/kernel_installer_gui.py:219
+msgid "Installing..."
+msgstr ""
+
+#: gui/kernel_installer_gui.py:238
+msgid "Error: kernel-installer not found!\n"
+msgstr ""
+
+#: gui/kernel_installer_gui.py:274
+msgid "Cancel Installation?"
+msgstr ""
+
+#: gui/kernel_installer_gui.py:276
+msgid "Are you sure you want to cancel the installation?"
+msgstr ""
+
+#: gui/kernel_installer_gui.py:286
+msgid "Cancelled"
+msgstr ""
+
+#: gui/kernel_installer_gui.py:296
+msgid "Installation in progress"
+msgstr ""
+
+#: gui/kernel_installer_gui.py:298
+msgid "An installation is in progress. Are you sure you want to exit?"
+msgstr ""
+
+#: gui/kernel_installer_gui.py:312
+msgid "Warning: Running GUI as root is not recommended."
 msgstr ""

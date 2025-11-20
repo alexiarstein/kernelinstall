@@ -7,6 +7,12 @@ Downloads, configures, compiles and installs the latest stable kernel from kerne
  * 2 ```cd kernelinstall```
  * 3 ```./kernel-installer```
 
+## Running the GUI:
+
+ * 1 Install dependencies: ```sudo apt install python3 python3-gi gir1.2-gtk-3.0 gir1.2-vte-2.91```
+ * 2 ```cd gui```
+ * 3 ```./run_gui.sh```
+
 ## Compiling it:
 
  * 1 Clone the repository
@@ -19,6 +25,8 @@ When compiling from source, be sure to have the required packages installed (mak
 
 ## Supported Distros:
 
+### Debian-based:
+ * **Soplos Linux** (with dracut support)
  * Debian 13
  * Debian 12
  * MX Linux
@@ -27,6 +35,24 @@ When compiling from source, be sure to have the required packages installed (mak
  * Ubuntu
  * ElementaryOS
  * PopOS!
+
+### Arch-based:
+ * **Arch Linux** (with dracut support)
+ * **Manjaro**
+ * **EndeavourOS**
+ * **CachyOS**
+ * **Garuda Linux**
+
+### RHEL-based:
+ * **Fedora** (with dracut support)
+ * **Rocky Linux**
+ * **AlmaLinux**
+ * **CentOS Stream**
+ * **Red Hat Enterprise Linux**
+
+## What does it change?
+
+Read the changelog [https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.17.8](https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.17.8)
 
 ## Language Support
 
@@ -39,6 +65,11 @@ configures it for debian, compiles and installs it.
 
 For now it only works on debian or distros that use debian as their upstream.
 
+**New features:**
+ * 🎉 **GUI Interface** with Python/GTK3 (see `gui/` folder)
+ * 🎉 **Dracut Support** for systems like Soplos Linux that don't use initramfs-tools
+ * 🎉 **Automatic initramfs detection** (dracut, initramfs-tools, mkinitcpio)
+
 
 It needs testing on ubuntu, mint, elementary or some of those. Please create an issue if you are willing to test with the results.
 
@@ -46,12 +77,12 @@ Thanks!
 
 -- Alexia.
 
-## DONATE / DONAR AL PROYECTO
+## DONATE / SUPPORT THE PROJECT
 
-Si deseas apoyar estos desarrollos libres e independientes y querés regalarme un cafecito podés hacer una donación privada con el siguiente QR. 
+If you want to support these free and independent developments and buy me a coffee, you can make a private donation with the following QR.
 
 ![QR Binance](https://github.com/alexiarstein/kernelinstall.github.io/blob/main/IMG_3213.png)
 
-Como las donaciones son anónimas (no se quien dona que cosa ni veo tu información personal) podés abrir un issue en el proyecto arriba con titulo donación y lo agrego a la lista de donors (Opcional)
+Since donations are anonymous (I don't know who donates what or see your personal information), you can open an issue in the project above with the title "donation" and I'll add you to the donors list (Optional)
 
 

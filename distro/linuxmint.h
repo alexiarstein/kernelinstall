@@ -1,8 +1,8 @@
-// Usuarios de linux mint, y también ubuntu, elementaryOS y basicamente cualquier otro clon de ubuntu:
-// Canonical firma el kernel con una llave de Microsoft para secure boot.
-// Aqui lo que hacemos es firmar el kernel con una de Goldendog Linux
-// Si desean que este kernel tenga secure boot, y tienen uefi, pueden agregarlo al boot.
-// sino, simplemente deshabilitar secure boot.
+// Linux Mint users, and also Ubuntu, ElementaryOS and basically any other Ubuntu clone:
+// Canonical signs the kernel with a Microsoft key for secure boot.
+// Here we sign the kernel with a GoldenDog Linux key
+// If you want this kernel to have secure boot, and you have UEFI, you can add it to boot.
+// Otherwise, simply disable secure boot.
 
 #ifndef LINUXMINT_H
 #define LINUXMINT_H
@@ -19,10 +19,10 @@ void mint_install_dependencies() {
 void mint_generate_certificate() {
     printf(_("Generating GoldenDogLinux Secure Boot certificate...\n"));
     
-    // Crear directorio para los certificados MOK
+    // Create directory for MOK certificates
     run("sudo mkdir -p /var/lib/shim-signed/mok/");
     
-    // Generar certificado autofirmado (válido por 10 años)
+    // Generate self-signed certificate (valid for 10 years)
     char cmd[1024];
     snprintf(cmd, sizeof(cmd),
              "sudo openssl req -nodes -new -x509 -newkey rsa:2048 "
@@ -31,7 +31,7 @@ void mint_generate_certificate() {
              "-days 3650 -subj \"/CN=GoldenDogLinux Secure Boot Key/\"");
     run(cmd);
     
-    // Establecer permisos adecuados para la clave privada
+    // Set appropriate permissions for private key
     run("sudo chmod 600 /var/lib/shim-signed/mok/MOK_goldendoglinux.priv");
     run("sudo chmod 644 /var/lib/shim-signed/mok/MOK_goldendoglinux.der");
     
@@ -58,7 +58,7 @@ int mint_ask_secure_boot_enrollment() {
 void mint_enroll_secure_boot_key() {
     printf(_("Enrolling GoldenDogLinux certificate for Secure Boot...\n"));
     
-    // Importar el certificado MOK
+    // Import MOK certificate
     run("sudo mokutil --import /var/lib/shim-signed/mok/MOK_goldendoglinux.der");
     
     printf(_("\n=== IMPORTANT SECURE BOOT INSTRUCTIONS ===\n"));
@@ -75,7 +75,7 @@ void mint_build_and_install(const char* home, const char* version, const char* t
     
     printf(_("Configuring GoldendogLinux Signature...\n"));
     
-    // Limpiar certificados específicos de Ubuntu/Mint y usar certificados por defecto
+    // Clear Ubuntu/Mint specific certificates and use default certificates
     snprintf(cmd, sizeof(cmd),
              "cd %s/kernel_build/linux-%s && "
              "sed -i 's/CONFIG_SYSTEM_TRUSTED_KEYS=.*/CONFIG_SYSTEM_TRUSTED_KEYS=\"\"/' .config && "
@@ -83,7 +83,7 @@ void mint_build_and_install(const char* home, const char* version, const char* t
              home, version);
     run(cmd);
     
-    // Compilar el kernel
+    // Compile the kernel
     snprintf(cmd, sizeof(cmd),
              "cd %s/kernel_build/linux-%s && fakeroot make -j$(nproc) bindeb-pkg",
              home, version);
@@ -101,6 +101,13 @@ void mint_update_bootloader() {
     run("sudo update-grub");
 }
 
+void mint_update_initramfs(const char* version) {
+    char cmd[512];
+    printf("Updating initramfs for Linux Mint/Ubuntu...\n");
+    snprintf(cmd, sizeof(cmd), "sudo update-initramfs -c -k %s", version);
+    run(cmd);
+}
+
 const char* mint_get_whiptail_install_cmd() {
     return "sudo apt update && sudo apt install -y whiptail";
 }
@@ -110,6 +117,7 @@ DistroOperations MINT_OPS = {
     .install_dependencies = mint_install_dependencies,
     .build_and_install = mint_build_and_install,
     .update_bootloader = mint_update_bootloader,
+    .update_initramfs = mint_update_initramfs,
     .get_whiptail_install_cmd = mint_get_whiptail_install_cmd
 };
 

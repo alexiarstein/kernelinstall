@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.1
+Type=Application
+Name=Kernel Installer
+GenericName=Linux Kernel Installer
+Comment=Download, compile and install the latest stable kernel from kernel.org
+Comment[es]=Descarga, compila e instala el último kernel estable desde kernel.org
+Icon=system-software-update
+Exec=/usr/local/bin/kernel-installer-gui
+Terminal=false
+Categories=System;Settings;
+Keywords=kernel;linux;compile;install;update;
+Keywords[es]=kernel;linux;compilar;instalar;actualizar;
+StartupNotify=true
