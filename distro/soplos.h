@@ -7,12 +7,13 @@ void soplos_install_dependencies() {
     // Update package list
     run("sudo apt update");
     
-    // Install/reinstall all required packages
+    // Install/reinstall all required packages including kernel headers
     run("sudo apt install --reinstall -y "
         "build-essential libncurses-dev bison flex libssl-dev libelf-dev "
         "bc wget tar xz-utils gettext libc6-dev fakeroot curl git debhelper libdw-dev rsync locales "
         "dracut dracut-core dracut-network linux-libc-dev libudev-dev libbpf-dev pkg-config "
-        "zlib1g-dev libzstd-dev dwarves kmod cpio pahole libzstd-dev liblz4-dev liblzma-dev");
+        "zlib1g-dev libzstd-dev dwarves kmod cpio pahole libzstd-dev liblz4-dev liblzma-dev "
+        "linux-headers-$(uname -r) linux-headers-generic");
 }
 
 void soplos_build_and_install(const char* home, const char* version, const char* tag) {
