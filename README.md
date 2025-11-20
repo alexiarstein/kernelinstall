@@ -20,7 +20,13 @@ Downloads, configures, compiles and installs the latest stable kernel from kerne
  * 3 ```make && sudo make install```
  * 4 run ```kernel-installer```
 
-When compiling from source, be sure to have the required packages installed (make, gcc, gettext) as these are required. 
+When compiling from source, be sure to have the required packages installed (build-essential, gcc, make, gettext, linux-libc-dev, libc6-dev) as these are required. 
+
+**Quick install of dependencies:**
+```bash
+sudo apt update
+sudo apt install -y build-essential gcc make gettext linux-libc-dev libc6-dev
+``` 
 
 
 ## Supported Distros:

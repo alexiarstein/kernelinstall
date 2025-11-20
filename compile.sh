@@ -6,7 +6,10 @@
 # ./kernel-installer
 
 compile() {
-sudo apt install -y gcc make gettext
+# Install compilation dependencies including kernel headers
+echo "Installing compilation dependencies..."
+sudo apt update
+sudo apt install -y build-essential gcc make gettext linux-libc-dev libc6-dev
 make clean
 make
 sudo make install
