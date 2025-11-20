@@ -120,10 +120,12 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
         }
 
         // Check for packaging start
-        if (strstr(line, "dpkg-buildpackage") || strstr(line, "rpmbuild") || strstr(line, "building package")) {
+        // Removed "building package" as it was causing false positives
+        if (strstr(line, "dpkg-buildpackage") || strstr(line, "rpmbuild")) {
             packaging_started = 1;
-            // Salir del modo ncurses para dejar que el packaging use stdout normal si es interactivo
-            // O simplemente mostrar un mensaje y cerrar
+            wprintw(log_win, "Packaging detected (trigger: %s). Switching to stdout...\n", line);
+            wrefresh(log_win);
+            napms(2000); // Give user time to read
             break; 
         }
     }
