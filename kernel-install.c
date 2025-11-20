@@ -19,7 +19,7 @@
 #include "distro/linuxmint.h"
 #include "distro/fedora.h"
 
-#define APP_VERSION "1.2.4"
+#define APP_VERSION "1.2.5"
 #define _(string) gettext(string)
 #define BUBU "bubu"
 
@@ -62,17 +62,48 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
     if (has_colors()) {
         start_color();
         init_pair(1, COLOR_GREEN, COLOR_BLACK);
+        init_pair(2, COLOR_CYAN, COLOR_BLACK); // Color para el header
     }
 
     int height, width;
     getmaxyx(stdscr, height, width);
 
-    // Ventana de logs (todo menos la última línea)
-    WINDOW *log_win = newwin(height - 1, width, 0, 0);
+    // Calcular alturas
+    int header_height = 1;
+    int sep1_height = 1;
+    int sep2_height = 1;
+    int bar_height = 1;
+    int log_height = height - header_height - sep1_height - sep2_height - bar_height;
+    
+    if (log_height < 5) log_height = 5; // Mínimo de seguridad
+
+    // Crear ventanas
+    WINDOW *header_win = newwin(header_height, width, 0, 0);
+    WINDOW *sep1_win = newwin(sep1_height, width, 1, 0);
+    WINDOW *log_win = newwin(log_height, width, 2, 0);
+    WINDOW *sep2_win = newwin(sep2_height, width, height - 2, 0);
+    WINDOW *bar_win = newwin(bar_height, width, height - 1, 0);
+
     scrollok(log_win, TRUE);
 
-    // Ventana de barra de progreso (última línea)
-    WINDOW *bar_win = newwin(1, width, height - 1, 0);
+    // Dibujar Header
+    char header_text[256];
+    snprintf(header_text, sizeof(header_text), "Alexia Kernel Installer Version %s", APP_VERSION);
+    int header_len = strlen(header_text);
+    int header_x = (width - header_len) / 2;
+    if (header_x < 0) header_x = 0;
+    
+    if (has_colors()) wattron(header_win, COLOR_PAIR(2) | A_BOLD);
+    mvwprintw(header_win, 0, header_x, "%s", header_text);
+    if (has_colors()) wattroff(header_win, COLOR_PAIR(2) | A_BOLD);
+    wrefresh(header_win);
+
+    // Dibujar Separadores
+    mvwhline(sep1_win, 0, 0, ACS_HLINE, width);
+    wrefresh(sep1_win);
+    
+    mvwhline(sep2_win, 0, 0, ACS_HLINE, width);
+    wrefresh(sep2_win);
 
     // Append 2>&1 to capture stderr as well
     char full_cmd[2048];
