@@ -26,7 +26,7 @@ The `compile.sh` script automatically detects your Linux distribution and instal
 
 **Supported package managers:**
  * **Debian/Ubuntu/Mint/Soplos**: apt
- * **Arch/Manjaro/EndeavourOS/CachyOS**: pacman
+ * ~~Arch/Manjaro/EndeavourOS/CachyOS~~: (no explicit support, always up-to-date)
  * **Fedora/RHEL/Rocky/Alma/CentOS**: dnf
  * **openSUSE**: zypper
  * **Gentoo**: emerge
@@ -71,12 +71,9 @@ sudo dnf install -y gcc make gettext-devel glibc-devel kernel-headers \
  * ElementaryOS
  * PopOS!
 
+
 ### Arch-based:
- * **Arch Linux** (with dracut support)
- * **Manjaro**
- * **EndeavourOS**
- * **CachyOS**
- * **Garuda Linux**
+*Arch Linux and derivatives are rolling release and always up-to-date. Explicit support has been removed as of November 2025.*
 
 ### RHEL-based:
  * **Fedora** (with dracut support)
@@ -124,6 +121,8 @@ This is a powerful tool that fetches the latest stable kernel release from [kern
 - Security: no unsafe signal handling, no orphaned processes
 
 This installer has been tested on multiple distributions. If you test it on Ubuntu, Mint, Elementary, Soplos or other distributions, please create an issue with your results to help improve compatibility.
+
+**Note:** The script `test_sandbox.sh` has been removed as it is no longer necessary.
 
 Thanks!
 

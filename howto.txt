@@ -29,12 +29,9 @@ Debian-based:
   • PopOS!
   • MX Linux
 
+
 Arch-based:
-  • Arch Linux (with dracut support)
-  • Manjaro
-  • EndeavourOS
-  • CachyOS
-  • Garuda Linux
+  *Support for Arch Linux and derivatives has been removed (rolling release, always up-to-date).*
 
 RHEL-based:
   • Fedora (with dracut support)
@@ -124,9 +121,9 @@ Each distribution implements:
   gui/run_gui.sh               - GUI launcher with dependency checks
   gui/README.md                - GUI documentation
 
+
 4.3. Testing & Documentation
 -----------------------------
-  test_sandbox.sh              - Safe testing environment (190 lines)
   compile.sh                   - Compilation helper script (renamed from compilar.sh)
 
 4.4. Desktop Integration
@@ -229,18 +226,10 @@ Option B - Using compile.sh script:
   $ ./compile.sh
   (Follow interactive prompts)
 
+
 7.4. TESTING WITHOUT SYSTEM MODIFICATION
 -----------------------------------------
-Safe testing in sandbox mode:
-  $ cd kernelinstall
-  $ ./test_sandbox.sh
-
-This will:
-  • Verify system dependencies
-  • Detect distribution and initramfs
-  • Compile the program
-  • Run basic validation
-  • NOT modify your system
+*The sandbox test script has been removed as of November 2025. Use a VM or container for safe testing if needed.*
 
 7.5. UPDATING TRANSLATIONS
 ---------------------------
