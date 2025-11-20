@@ -19,7 +19,7 @@
 #include "distro/linuxmint.h"
 #include "distro/fedora.h"
 
-#define APP_VERSION "1.2.3"
+#define APP_VERSION "1.2.4"
 #define _(string) gettext(string)
 #define BUBU "bubu"
 
@@ -58,6 +58,11 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
     cbreak();
     noecho();
     curs_set(0); // Ocultar cursor
+    
+    if (has_colors()) {
+        start_color();
+        init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    }
 
     int height, width;
     getmaxyx(stdscr, height, width);
@@ -97,15 +102,19 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
 
             // Dibujar barra
             werase(bar_win);
-            int bar_width = width - 10; // Espacio para texto "XXX% "
+            mvwprintw(bar_win, 0, 0, "Progress: [");
+            
+            int bar_width = width - 20; // Espacio para "Progress: " y " XXX%"
             int filled_width = (percent * bar_width) / 100;
             
-            mvwprintw(bar_win, 0, 0, "[");
+            if (has_colors()) wattron(bar_win, COLOR_PAIR(1));
             for (int i = 0; i < bar_width; i++) {
                 if (i < filled_width) waddch(bar_win, '=');
                 else if (i == filled_width) waddch(bar_win, '>');
                 else waddch(bar_win, ' ');
             }
+            if (has_colors()) wattroff(bar_win, COLOR_PAIR(1));
+            
             wprintw(bar_win, "] %d%%", percent);
             wrefresh(bar_win);
         }
