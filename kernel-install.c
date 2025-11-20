@@ -16,6 +16,7 @@
 #include "distro/common.h"
 #include "distro/debian.h"
 #include "distro/linuxmint.h"
+#include "distro/fedora.h"
 
 #define APP_VERSION "1.1.0"
 #define _(string) gettext(string)
@@ -31,6 +32,78 @@ int run(const char *cmd) {
         exit(EXIT_FAILURE);
     }
     return r;
+}
+
+int count_source_files(const char *dir) {
+    char cmd[1024];
+    snprintf(cmd, sizeof(cmd), "find %s -name '*.c' | wc -l", dir);
+    FILE *fp = popen(cmd, "r");
+    if (!fp) return 20000; // Fallback estimate
+    char buf[32];
+    if (!fgets(buf, sizeof(buf), fp)) {
+        pclose(fp);
+        return 20000;
+    }
+    pclose(fp);
+    return atoi(buf);
+}
+
+int run_build_with_progress(const char *cmd, const char *source_dir) {
+    int total_files = count_source_files(source_dir);
+    if (total_files == 0) total_files = 1;
+
+    // Append 2>&1 to capture stderr as well
+    char full_cmd[2048];
+    snprintf(full_cmd, sizeof(full_cmd), "%s 2>&1", cmd);
+
+    FILE *build_pipe = popen(full_cmd, "r");
+    if (!build_pipe) {
+        perror("popen build");
+        return -1;
+    }
+
+    FILE *gauge_pipe = popen("whiptail --gauge \"Compiling kernel...\" 6 50 0", "w");
+    if (!gauge_pipe) {
+        // If gauge fails, just run normally? Or fail?
+        // Let's try to continue without gauge if possible, but for now just fail or print to stdout.
+        // But we already opened build_pipe.
+        // Let's just proceed without gauge if it fails, but we need to consume output.
+    }
+
+    char line[1024];
+    int current_count = 0;
+    int packaging_started = 0;
+
+    while (fgets(line, sizeof(line), build_pipe)) {
+        // Check for compilation indicators
+        if (strstr(line, " CC ") || strstr(line, " LD ") || strstr(line, " AR ")) {
+            current_count++;
+            int percent = (current_count * 100) / total_files;
+            if (percent > 100) percent = 100;
+            if (gauge_pipe) {
+                fprintf(gauge_pipe, "%d\n", percent);
+                fflush(gauge_pipe);
+            }
+        }
+
+        // Check for packaging start
+        if (strstr(line, "dpkg-buildpackage") || strstr(line, "rpmbuild") || strstr(line, "building package")) {
+            packaging_started = 1;
+            if (gauge_pipe) {
+                pclose(gauge_pipe);
+                gauge_pipe = NULL;
+            }
+            printf(_("\nPackaging started. Please wait...\n"));
+        }
+        
+        // If packaging started, we might want to show the output
+        if (packaging_started) {
+            printf("%s", line);
+        }
+    }
+
+    if (gauge_pipe) pclose(gauge_pipe);
+    return pclose(build_pipe);
 }
 
 int check_and_install_whiptail(Distro distro) {
@@ -122,6 +195,8 @@ DistroOperations* get_distro_operations(Distro distro) {
             return &DEBIAN_OPS;
         case DISTRO_MINT:
             return &MINT_OPS;
+        case DISTRO_FEDORA:
+            return &FEDORA_OPS;
         default:
             return NULL;
     }

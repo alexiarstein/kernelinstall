@@ -8,7 +8,7 @@ LDFLAGS =
 OBJ = kernel-install.o
 TARGET = kernel-installer
 DISTRO_DIR = distro
-DISTRO_HEADERS = $(DISTRO_DIR)/common.h $(DISTRO_DIR)/debian.h $(DISTRO_DIR)/linuxmint.h
+DISTRO_HEADERS = $(DISTRO_DIR)/common.h $(DISTRO_DIR)/debian.h $(DISTRO_DIR)/linuxmint.h $(DISTRO_DIR)/fedora.h
 
 # Reglas de compilación
 $(TARGET): $(OBJ)

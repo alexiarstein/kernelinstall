@@ -30,6 +30,7 @@ typedef struct {
 
 // Funciones comunes
 int run(const char *cmd);
+int run_build_with_progress(const char *cmd, const char *source_dir);
 Distro detect_distro();
 DistroOperations* get_distro_operations(Distro distro);
 

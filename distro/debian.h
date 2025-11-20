@@ -11,11 +11,14 @@ void debian_install_dependencies() {
 
 void debian_build_and_install(const char* home, const char* version, const char* tag) {
     char cmd[2048];
+    char source_dir[512];
+    
+    snprintf(source_dir, sizeof(source_dir), "%s/kernel_build/linux-%s", home, version);
     
     snprintf(cmd, sizeof(cmd),
-             "cd %s/kernel_build/linux-%s && fakeroot make -j$(nproc) bindeb-pkg",
-             home, version);
-    run(cmd);
+             "cd %s && fakeroot make -j$(nproc) bindeb-pkg",
+             source_dir);
+    run_build_with_progress(cmd, source_dir);
     
     snprintf(cmd, sizeof(cmd),
              "cd %s/kernel_build && "
