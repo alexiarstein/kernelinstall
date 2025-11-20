@@ -18,7 +18,7 @@
 #include "distro/linuxmint.h"
 #include "distro/fedora.h"
 
-#define APP_VERSION "1.1.0"
+#define APP_VERSION "1.2.0"
 #define _(string) gettext(string)
 #define BUBU "bubu"
 
@@ -49,6 +49,7 @@ int count_source_files(const char *dir) {
 }
 
 int run_build_with_progress(const char *cmd, const char *source_dir) {
+    printf(_("Initializing build with progress bar (v1.2.0)...\n"));
     int total_files = count_source_files(source_dir);
     if (total_files == 0) total_files = 1;
 
