@@ -1,0 +1,314 @@
+# ITALIAN TRANSLATION.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-09 21:05-0300\n"
+"PO-Revision-Date: 2025-11-20 20:46+0200\n"
+"Last-Translator: Albano Battistella <albanobattistella@gmail.com>\n"
+"Language-Team: Italian <LL@li.org>\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: kernel-install.c:27  
+msgid "Running"  
+msgstr "In esecuzione"  
+      
+#: kernel-install.c:30  
+#, c-format  
+msgid " Command failed: %s (exit %d)\n"  
+msgstr " Comando fallito: %s (uscita %d)\n"  
+      
+#: kernel-install.c:38  
+#, c-format  
+msgid "whiptail not found. Installing...\n"  
+msgstr "whiptail non trovato. Installazione...\n"  
+      
+#: kernel-install.c:42  
+#, c-format  
+msgid "Cannot install whiptail on this distribution\n"  
+msgstr "Impossibile installare whiptail su questa distribuzione\n"  
+      
+#: kernel-install.c:47  
+#, c-format  
+msgid "Failed to install whiptail\n"  
+msgstr "Installazione di whiptail fallita\n"  
+      
+#: kernel-install.c:51  
+#, c-format  
+msgid "whiptail installed successfully. Restarting application...\n"  
+msgstr "whiptail installato con successo. Riavvio dell'applicazione...\n"  
+      
+#: kernel-install.c:53  
+msgid "Failed to restart"  
+msgstr "Riavvio fallito"  
+      
+#: kernel-install.c:67  
+msgid "Alexia Kernel Installer"  
+msgstr "Installatore Kernel Alexia"  
+      
+#: kernel-install.c:68  
+msgid "Alexia Kernel Installer Version"  
+msgstr "Versione dell'Installatore Kernel Alexia"  
+      
+#: kernel-install.c:69  
+msgid ""  
+"This program will download, compile and install the latest stable kernel "  
+"from kernel.org."  
+msgstr ""  
+"Questo programma scaricherà, compilerà e installerà l'ultimo kernel stabile "  
+"da kernel.org."  
+      
+#: kernel-install.c:70  
+msgid "The process may take up to three hours in some systems."  
+msgstr "Il processo potrebbe richiedere fino a tre ore su alcuni sistemi."  
+      
+#: kernel-install.c:71  
+msgid "Do you wish to continue"  
+msgstr "Desideri continuare?"  
+      
+#: kernel-install.c:82  
+msgid "Cleanup Build Files"  
+msgstr "Pulizia File di Compilazione"  
+      
+#: kernel-install.c:83  
+msgid "Do you want to clean up the build files"  
+msgstr "Vuoi pulire i file di compilazione?"  
+      
+#: kernel-install.c:141 kernel-install.c:319  
+#, c-format  
+msgid "Secure Boot enrollment skipped.\n"  
+msgstr "Registrazione Secure Boot saltata.\n"  
+      
+#: kernel-install.c:142 kernel-install.c:320  
+#, c-format  
+msgid ""  
+"You can enroll the certificate later with: sudo mokutil --import /var/lib/"  
+"shim-signed/mok/MOK_goldendoglinux.der\n"  
+msgstr ""  
+"Puoi registrare il certificato in seguito con: sudo mokutil --import /var/lib/"  
+"shim-signed/mok/MOK_goldendoglinux.der\n"  
+      
+#: kernel-install.c:154  
+msgid "Installation Complete"  
+msgstr "Installazione Completata"  
+      
+#: kernel-install.c:155  
+msgid "Reboot Now"  
+msgstr "Riavvia Ora"  
+      
+#: kernel-install.c:156  
+msgid "Reboot Later"  
+msgstr "Riavvia Più Tardi"  
+      
+#: kernel-install.c:157  
+msgid "Kernel"  
+msgstr "Kernel"  
+      
+#: kernel-install.c:159  
+msgid "has been successfully installed"  
+msgstr "è stato installato con successo"  
+      
+#: kernel-install.c:160 kernel-install.c:173  
+msgid "If you enrolled Secure Boot, complete the enrollment during reboot"  
+msgstr "Se hai registrato Secure Boot, completa la registrazione durante il riavvio"  
+      
+#: kernel-install.c:165  
+#, c-format  
+msgid "Rebooting system...\n"  
+msgstr "Riavvio del sistema...\n"  
+      
+#: kernel-install.c:167  
+#, c-format  
+msgid ""  
+"Remember: If you enrolled Secure Boot, look for the blue MOK Manager "  
+"screen!\n"  
+msgstr ""  
+"Ricorda: se hai registrato Secure Boot, cerca la schermata blu del MOK Manager!\n"  
+      
+#: kernel-install.c:171  
+msgid "Remember to reboot the machine to boot with the latest kernel"  
+msgstr "Ricorda di riavviare la macchina per avviare con l'ultimo kernel"  
+      
+#: kernel-install.c:175  
+msgid "Thank you for using my software"  
+msgstr "Grazie per aver usato il mio software"  
+      
+#: kernel-install.c:176  
+msgid "Please keep it free for everyone"  
+msgstr "Per favore, mantienilo gratuito per tutti"  
+      
+#: kernel-install.c:177  
+msgid "Alexia."  
+msgstr "Alexia."  
+      
+#: kernel-install.c:193  
+#, c-format  
+msgid "Could not determine home directory\n"  
+msgstr "Impossibile determinare la directory home\n"  
+      
+#: kernel-install.c:202  
+#, c-format  
+msgid ""  
+"Unsupported Linux distribution. Currently only Debian-based systems are "  
+"supported.\n"  
+msgstr ""  
+"Distribuzione Linux non supportata. Attualmente sono supportati solo i sistemi basati su Debian.\n"  
+      
+#: kernel-install.c:206  
+#, c-format  
+msgid "Detected distribution: %s\n"  
+msgstr "Distribuzione rilevata: %s\n"  
+      
+#: kernel-install.c:209  
+#, c-format  
+msgid "Whiptail installation failed. Continuing with text mode...\n"  
+msgstr "Installazione di Whiptail fallita. Continuo con la modalità testo...\n"  
+      
+#: kernel-install.c:213  
+#, c-format  
+msgid "Installation cancelled by user.\n"  
+msgstr "Installazione annullata dall'utente.\n"  
+      
+#: kernel-install.c:220  
+#, c-format  
+msgid "Creating build directory: %s\n"  
+msgstr "Creazione della directory di compilazione: %s\n"  
+      
+#: kernel-install.c:228  
+#, c-format  
+msgid "Path exists but is not a directory: %s\n"  
+msgstr "Il percorso esiste ma non è una directory: %s\n"  
+      
+#: kernel-install.c:232  
+msgid "Failed to create build directory"  
+msgstr "Creazione della directory di compilazione fallita"  
+      
+#: kernel-install.c:238  
+#, c-format  
+msgid "Installing required packages for %s...\n"  
+msgstr "Installazione dei pacchetti richiesti per %s...\n"  
+      
+#: kernel-install.c:248  
+#, c-format  
+msgid "Fetching latest kernel version from kernel.org...\n"  
+msgstr "Recupero dell'ultima versione del kernel da kernel.org...\n"  
+      
+#: kernel-install.c:262  
+#, c-format  
+msgid "Could not fetch latest kernel version.\n"  
+msgstr "Impossibile recuperare l'ultima versione del kernel.\n"  
+      
+#: kernel-install.c:268  
+#, c-format  
+msgid "Empty version string.\n"  
+msgstr "Stringa della versione vuota.\n"  
+      
+#: kernel-install.c:279  
+#, c-format  
+msgid "Latest stable kernel: %s\n"  
+msgstr "Ultimo kernel stabile: %s\n"  
+      
+#: kernel-install.c:307  
+#, c-format  
+msgid "Building and installing kernel for %s...\n"  
+msgstr "Compilazione e installazione del kernel per %s...\n"  
+      
+#: kernel-install.c:311  
+#, c-format  
+msgid "Updating bootloader for %s...\n"  
+msgstr "Aggiornamento del bootloader per %s...\n"  
+      
+#: kernel-install.c:328  
+#, c-format  
+msgid "Build files cleaned up.\n"  
+msgstr "File di compilazione ripuliti.\n"  
+      
+#: distro/linuxmint.h:20  
+#, c-format  
+msgid "Generating GoldenDogLinux Secure Boot certificate...\n"  
+msgstr "Generazione del certificato Secure Boot GoldenDogLinux...\n"  
+      
+#: distro/linuxmint.h:38  
+#, c-format  
+msgid "GoldenDogLinux certificate generated successfully.\n"  
+msgstr "Certificato GoldenDogLinux generato con successo.\n"  
+      
+#: distro/linuxmint.h:49  
+msgid "Secure Boot Enrollment"  
+msgstr "Registrazione Secure Boot"  
+      
+#: distro/linuxmint.h:50  
+msgid "Do you want to enroll the GoldenDogLinux certificate for Secure Boot?"  
+msgstr "Vuoi registrare il certificato GoldenDogLinux per Secure Boot?"  
+      
+#: distro/linuxmint.h:51  
+msgid "This will allow your custom kernel to work with Secure Boot enabled."  
+msgstr "Questo permetterà al tuo kernel personalizzato di funzionare con Secure Boot abilitato."  
+      
+#: distro/linuxmint.h:52  
+msgid ""  
+"You will be asked to set a password and enroll the key during the next "  
+"reboot."  
+msgstr ""  
+"Ti verrà chiesto di impostare una password e registrare la chiave durante il prossimo"
+"riavvio."  
+      
+#: distro/linuxmint.h:53  
+msgid "Continue with enrollment?"  
+msgstr "Continuare con la registrazione?"  
+      
+#: distro/linuxmint.h:59  
+#, c-format  
+msgid "Enrolling GoldenDogLinux certificate for Secure Boot...\n"  
+msgstr "Registrazione del certificato GoldenDogLinux per Secure Boot...\n"  
+      
+#: distro/linuxmint.h:64  
+#, c-format  
+msgid ""  
+"\n"  
+"=== IMPORTANT SECURE BOOT INSTRUCTIONS ===\n"  
+msgstr ""  
+"\n"  
+"=== ISTRUZIONI IMPORTANTI PER SECURE BOOT ===\n"  
+      
+#: distro/linuxmint.h:65  
+#, c-format  
+msgid "1. You will be asked to set a enrollment password now\n"  
+msgstr "1. Ti verrà chiesto di impostare una password di registrazione ora\n"  
+      
+#: distro/linuxmint.h:66  
+#, c-format  
+msgid "2. During the next reboot, a blue screen (MOK Manager) will appear\n"  
+msgstr "2. Durante il prossimo riavvio, apparirà una schermata blu (MOK Manager)\n"  
+      
+#: distro/linuxmint.h:67  
+#, c-format  
+msgid "3. Select 'Enroll MOK' > 'Continue' > 'Yes' > Enter the password\n"  
+msgstr "3. Seleziona 'Enroll MOK' > 'Continue' > 'Yes' > Inserisci la password\n"  
+      
+#: distro/linuxmint.h:68  
+#, c-format  
+msgid "4. Select 'Reboot' to complete the enrollment\n"  
+msgstr "4. Seleziona 'Reboot' per completare la registrazione\n"  
+      
+#: distro/linuxmint.h:69  
+#, c-format  
+msgid "5. After enrollment, your kernel will work with Secure Boot\n"  
+msgstr "5. Dopo la registrazione, il tuo kernel funzionerà con Secure Boot\n"  
+      
+#: distro/linuxmint.h:70  
+#, c-format  
+msgid "==========================================\n"  
+msgstr "==========================================\n"  
+      
+#: distro/linuxmint.h:76  
+#, c-format  
+msgid "Configuring GoldendogLinux Signature...\n"  
+msgstr "Configurazione della firma GoldendogLinux...\n"
