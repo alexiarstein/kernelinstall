@@ -225,15 +225,25 @@ class KernelInstallerGUI(Gtk.Window):
         # Run the C installer
         installer_path = self.find_installer()
         if installer_path:
-            self.terminal.spawn_sync(
-                Vte.PtyFlags.DEFAULT,
-                os.getcwd(),
-                [installer_path],
-                [],
-                GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                None,
-                None,
-            )
+            try:
+                self.terminal.spawn_async(
+                    Vte.PtyFlags.DEFAULT,
+                    os.getcwd(),
+                    [installer_path],
+                    None,
+                    GLib.SpawnFlags.DEFAULT,
+                    None,
+                    None,
+                    -1,
+                    None,
+                    None,
+                    None
+                )
+            except Exception as e:
+                self.write_to_terminal(_("Error launching installer: {}\n").format(str(e)))
+                self.installation_running = False
+                self.start_button.set_sensitive(True)
+                self.cancel_button.set_sensitive(False)
         else:
             self.write_to_terminal(_("Error: kernel-installer not found!\n"))
             self.installation_running = False
