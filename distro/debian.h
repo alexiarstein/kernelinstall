@@ -1,3 +1,8 @@
+// la lógica de debian es la misma que mint LMDE y cualquier distro que use debian como upstream.
+// no hay que tocar mucho por aquí para dar soporte a distros que usen debian como upstream.
+// - Alexia.
+
+
 #ifndef DEBIAN_H
 #define DEBIAN_H
 

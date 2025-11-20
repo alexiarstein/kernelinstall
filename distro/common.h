@@ -19,7 +19,7 @@ typedef enum {
     DISTRO_UNKNOWN
 } Distro;
 
-// Estructura para operaciones de distribución
+
 typedef struct {
     const char* name;
     void (*install_dependencies)();

@@ -1,3 +1,5 @@
+// esto está re experimental por ahora. Probar bajo su propio riesgo.
+// - Alexia.
 #ifndef FEDORA_H
 #define FEDORA_H
 
@@ -62,3 +64,5 @@ DistroOperations FEDORA_OPS = {
 };
 
 #endif
+// y falta agregarle soporte a rhel y todos sus clones.
+// - Alexia.

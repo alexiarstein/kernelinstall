@@ -39,7 +39,7 @@ int count_source_files(const char *dir) {
     char cmd[1024];
     snprintf(cmd, sizeof(cmd), "find %s -name '*.c' | wc -l", dir);
     FILE *fp = popen(cmd, "r");
-    if (!fp) return 20000; // Fallback estimate
+    if (!fp) return 20000; // Fallback estimado
     char buf[32];
     if (!fgets(buf, sizeof(buf), fp)) {
         pclose(fp);
@@ -53,7 +53,6 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
     int total_files = count_source_files(source_dir);
     if (total_files == 0) total_files = 1;
 
-    // Inicializar ncurses
     initscr();
     cbreak();
     noecho();
@@ -62,22 +61,22 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
     if (has_colors()) {
         start_color();
         init_pair(1, COLOR_GREEN, COLOR_BLACK);
-        init_pair(2, COLOR_CYAN, COLOR_BLACK); // Color para el header
+        init_pair(2, COLOR_CYAN, COLOR_BLACK); 
     }
 
     int height, width;
     getmaxyx(stdscr, height, width);
 
-    // Calcular alturas
+
     int header_height = 1;
     int sep1_height = 1;
     int sep2_height = 1;
     int bar_height = 1;
     int log_height = height - header_height - sep1_height - sep2_height - bar_height;
     
-    if (log_height < 5) log_height = 5; // Mínimo de seguridad
+    if (log_height < 5) log_height = 5; 
 
-    // Crear ventanas
+  
     WINDOW *header_win = newwin(header_height, width, 0, 0);
     WINDOW *sep1_win = newwin(sep1_height, width, 1, 0);
     WINDOW *log_win = newwin(log_height, width, 2, 0);
@@ -86,7 +85,7 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
 
     scrollok(log_win, TRUE);
 
-    // Dibujar Header
+   
     char header_text[256];
     snprintf(header_text, sizeof(header_text), "Alexia Kernel Installer Version %s", APP_VERSION);
     int header_len = strlen(header_text);
@@ -98,14 +97,13 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
     if (has_colors()) wattroff(header_win, COLOR_PAIR(2) | A_BOLD);
     wrefresh(header_win);
 
-    // Dibujar Separadores
+   
     mvwhline(sep1_win, 0, 0, ACS_HLINE, width);
     wrefresh(sep1_win);
     
     mvwhline(sep2_win, 0, 0, ACS_HLINE, width);
     wrefresh(sep2_win);
 
-    // Append 2>&1 to capture stderr as well
     char full_cmd[2048];
     snprintf(full_cmd, sizeof(full_cmd), "%s 2>&1", cmd);
 
@@ -121,11 +119,9 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
     int packaging_started = 0;
 
     while (fgets(line, sizeof(line), build_pipe)) {
-        // Imprimir en log window
         wprintw(log_win, "%s", line);
         wrefresh(log_win);
 
-        // Check for compilation indicators
         if (strstr(line, " CC ") || strstr(line, " LD ") || strstr(line, " AR ")) {
             current_count++;
             int percent = (current_count * 100) / total_files;
@@ -133,7 +129,7 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
 
             // Dibujar barra
             werase(bar_win);
-            mvwprintw(bar_win, 0, 0, "Progress: [");
+            mvwprintw(bar_win, 0, 0, "%s [", _("Progress:"));
             
             int bar_width = width - 20; // Espacio para "Progress: " y " XXX%"
             int filled_width = (percent * bar_width) / 100;
@@ -150,9 +146,9 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
             wrefresh(bar_win);
         }
 
-        // Check for packaging start
-        // "dpkg-buildpackage" runs at the start, so we must wait for "dpkg-deb" which runs at the end.
-        // "Processing files:" is typical for rpmbuild end phase.
+// cuando empieza a construir los .deb terminamos la barra por que ya casi termina. 
+// igual podria mejorar esto en breve. Hay que darle forma. Fue bastante laburo por hoy.
+// - Alexia.
         if (strstr(line, "dpkg-deb: building package") || strstr(line, "Processing files:")) {
             packaging_started = 1;
             break; 
@@ -163,7 +159,6 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
     
     if (packaging_started) {
         printf(_("Packaging started. Switching to standard output...\n"));
-        // Continuar leyendo el pipe y mandarlo a stdout
         while (fgets(line, sizeof(line), build_pipe)) {
             printf("%s", line);
         }
@@ -236,7 +231,7 @@ Distro detect_distro() {
         if (strstr(line, "ID=linuxmint")) {
             fclose(fp);
             return DISTRO_MINT;
-        } else if (strstr(line, "ID=ubuntu") || strstr(line, "ID=elementary") || strstr(line, "ID=pop")) {
+        } else if (strstr(line, "ID=ubuntu") || strstr(line, "ID=elementary") || strstr(line, "ID=pop") || strstr(line, "ID=zorin")) {
             fclose(fp);
             return DISTRO_MINT; // Tratar Ubuntu como Mint para certificados
         } else if (strstr(line, "ID=debian") || strstr(line, "ID=goldendoglinux") || strstr(line, "ID=soplos")) {
@@ -373,7 +368,7 @@ int main(void) {
         }
     }
 
-    // Instalar dependencias específicas de la distribución
+    // Instalar las dependencias específicas de la distribución
     printf(_("Installing required packages for %s...\n"), ops->name);
     ops->install_dependencies();
 
@@ -417,7 +412,7 @@ int main(void) {
 
     printf(_("Latest stable kernel: %s\n"), latest);
 
-    // Descargar y extraer el kernel
+  
     char cmd[1024];
     snprintf(cmd, sizeof(cmd),
              "cd %s/kernel_build && "
@@ -429,7 +424,7 @@ int main(void) {
              "cd %s/kernel_build && tar -xf linux-%s.tar.xz", home, latest);
     run(cmd);
 
-    // Configurar el kernel
+   
     snprintf(cmd, sizeof(cmd),
              "cd %s/kernel_build/linux-%s && "
              "cp /boot/config-$(uname -r) .config && "
@@ -442,11 +437,11 @@ int main(void) {
              home, latest, TAG);
     run(cmd);
 
-    // Compilar e instalar usando operaciones específicas
+
     printf(_("Building and installing kernel for %s...\n"), ops->name);
     ops->build_and_install(home, latest, TAG);
 
-    // Actualizar bootloader
+    
     printf(_("Updating bootloader for %s...\n"), ops->name);
     ops->update_bootloader();
 
