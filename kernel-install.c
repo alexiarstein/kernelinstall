@@ -12,6 +12,7 @@
 #include <sys/stat.h>
 #include <libintl.h>
 #include <locale.h>
+#include <ncurses.h>
 
 #include "distro/common.h"
 #include "distro/debian.h"
@@ -49,9 +50,24 @@ int count_source_files(const char *dir) {
 }
 
 int run_build_with_progress(const char *cmd, const char *source_dir) {
-    printf(_("Initializing build with progress bar (v1.2.0)...\n"));
     int total_files = count_source_files(source_dir);
     if (total_files == 0) total_files = 1;
+
+    // Inicializar ncurses
+    initscr();
+    cbreak();
+    noecho();
+    curs_set(0); // Ocultar cursor
+
+    int height, width;
+    getmaxyx(stdscr, height, width);
+
+    // Ventana de logs (todo menos la última línea)
+    WINDOW *log_win = newwin(height - 1, width, 0, 0);
+    scrollok(log_win, TRUE);
+
+    // Ventana de barra de progreso (última línea)
+    WINDOW *bar_win = newwin(1, width, height - 1, 0);
 
     // Append 2>&1 to capture stderr as well
     char full_cmd[2048];
@@ -59,16 +75,9 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
 
     FILE *build_pipe = popen(full_cmd, "r");
     if (!build_pipe) {
+        endwin();
         perror("popen build");
         return -1;
-    }
-
-    FILE *gauge_pipe = popen("whiptail --gauge \"Compiling kernel...\" 6 50 0", "w");
-    if (!gauge_pipe) {
-        // If gauge fails, just run normally? Or fail?
-        // Let's try to continue without gauge if possible, but for now just fail or print to stdout.
-        // But we already opened build_pipe.
-        // Let's just proceed without gauge if it fails, but we need to consume output.
     }
 
     char line[1024];
@@ -76,34 +85,50 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
     int packaging_started = 0;
 
     while (fgets(line, sizeof(line), build_pipe)) {
+        // Imprimir en log window
+        wprintw(log_win, "%s", line);
+        wrefresh(log_win);
+
         // Check for compilation indicators
         if (strstr(line, " CC ") || strstr(line, " LD ") || strstr(line, " AR ")) {
             current_count++;
             int percent = (current_count * 100) / total_files;
             if (percent > 100) percent = 100;
-            if (gauge_pipe) {
-                fprintf(gauge_pipe, "%d\n", percent);
-                fflush(gauge_pipe);
+
+            // Dibujar barra
+            werase(bar_win);
+            int bar_width = width - 10; // Espacio para texto "XXX% "
+            int filled_width = (percent * bar_width) / 100;
+            
+            mvwprintw(bar_win, 0, 0, "[");
+            for (int i = 0; i < bar_width; i++) {
+                if (i < filled_width) waddch(bar_win, '=');
+                else if (i == filled_width) waddch(bar_win, '>');
+                else waddch(bar_win, ' ');
             }
+            wprintw(bar_win, "] %d%%", percent);
+            wrefresh(bar_win);
         }
 
         // Check for packaging start
         if (strstr(line, "dpkg-buildpackage") || strstr(line, "rpmbuild") || strstr(line, "building package")) {
             packaging_started = 1;
-            if (gauge_pipe) {
-                pclose(gauge_pipe);
-                gauge_pipe = NULL;
-            }
-            printf(_("\nPackaging started. Please wait...\n"));
+            // Salir del modo ncurses para dejar que el packaging use stdout normal si es interactivo
+            // O simplemente mostrar un mensaje y cerrar
+            break; 
         }
-        
-        // If packaging started, we might want to show the output
-        if (packaging_started) {
+    }
+
+    endwin(); // Restaurar terminal
+    
+    if (packaging_started) {
+        printf(_("Packaging started. Switching to standard output...\n"));
+        // Continuar leyendo el pipe y mandarlo a stdout
+        while (fgets(line, sizeof(line), build_pipe)) {
             printf("%s", line);
         }
     }
 
-    if (gauge_pipe) pclose(gauge_pipe);
     return pclose(build_pipe);
 }
 

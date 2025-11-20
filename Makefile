@@ -4,7 +4,7 @@
 
 CC = gcc
 CFLAGS = -Wall -Wextra -g -D_FORTIFY_SOURCE=2
-LDFLAGS = 
+LDFLAGS = -lncurses
 OBJ = kernel-install.o
 TARGET = kernel-installer
 DISTRO_DIR = distro
