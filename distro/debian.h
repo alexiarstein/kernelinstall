@@ -14,7 +14,7 @@ void debian_build_and_install(const char* home, const char* version, const char*
     char cmd[2048];
     
     snprintf(cmd, sizeof(cmd),
-             "cd %s/kernel_build/linux-%s && make -j$(nproc) bindeb-pkg KBUILD_BUILD_USER=builder KBUILD_BUILD_HOST=debian-linux",
+             "cd %s/kernel_build/linux-%s && fakeroot make -j$(nproc) bindeb-pkg",
              home, version);
     run(cmd);
     
