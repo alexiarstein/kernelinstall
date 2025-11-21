@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-21 13:32-0300\n"
+"POT-Creation-Date: 2025-11-21 20:34-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,222 +17,247 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: kernel-install.c:46
+#: kernel-install.c:47
 msgid "Running"
 msgstr ""
 
-#: kernel-install.c:49
+#: kernel-install.c:50
 #, c-format
 msgid " Command failed: %s (exit %d)\n"
 msgstr ""
 
-#: kernel-install.c:218
-msgid "Progress:"
-msgstr ""
-
-#: kernel-install.c:246
+#: kernel-install.c:78 kernel-install.c:414
 msgid "Building kernel and kernel headers .deb package. Please wait..."
 msgstr ""
 
-#: kernel-install.c:254
+#: kernel-install.c:80 kernel-install.c:423
 msgid "Building kernel .rpm package. Please wait..."
 msgstr ""
 
-#: kernel-install.c:270
+#: kernel-install.c:86
+msgid "Elapsed"
+msgstr ""
+
+#: kernel-install.c:146
+msgid "SYSTEM LOAD"
+msgstr ""
+
+#: kernel-install.c:172
+msgid "Load Average:"
+msgstr ""
+
+#: kernel-install.c:177
+msgid "Cores"
+msgstr ""
+
+#: kernel-install.c:234 kernel-install.c:318
+#, c-format
+msgid "Kernel Installer Version %s %s"
+msgstr ""
+
+#: kernel-install.c:234 kernel-install.c:318
+msgid "by Alexia Michelle <https://github.com/alexiarstein/kernelinstall>"
+msgstr ""
+
+#: kernel-install.c:391
+msgid "Progress:"
+msgstr ""
+
+#: kernel-install.c:447
 #, c-format
 msgid "whiptail not found. Installing...\n"
 msgstr ""
 
-#: kernel-install.c:274
+#: kernel-install.c:451
 #, c-format
 msgid "Cannot install whiptail on this distribution\n"
 msgstr ""
 
-#: kernel-install.c:279
+#: kernel-install.c:456
 #, c-format
 msgid "Failed to install whiptail\n"
 msgstr ""
 
-#: kernel-install.c:283
+#: kernel-install.c:460
 #, c-format
 msgid "whiptail installed successfully. Restarting application...\n"
 msgstr ""
 
-#: kernel-install.c:285
+#: kernel-install.c:462
 msgid "Failed to restart"
 msgstr ""
 
-#: kernel-install.c:299
+#: kernel-install.c:476
 msgid "Alexia Kernel Installer"
 msgstr ""
 
-#: kernel-install.c:300
+#: kernel-install.c:477
 msgid "Alexia Kernel Installer Version"
 msgstr ""
 
-#: kernel-install.c:301
+#: kernel-install.c:478
 msgid ""
 "This program will download, compile and install the latest stable kernel "
 "from kernel.org."
 msgstr ""
 
-#: kernel-install.c:302
+#: kernel-install.c:479
 msgid "The process may take up to three hours in some systems."
 msgstr ""
 
-#: kernel-install.c:303
+#: kernel-install.c:480
 msgid "Do you wish to continue"
 msgstr ""
 
-#: kernel-install.c:314
+#: kernel-install.c:491
 msgid "Cleanup Build Files"
 msgstr ""
 
-#: kernel-install.c:315
+#: kernel-install.c:492
 msgid "Do you want to clean up the build files"
 msgstr ""
 
-#: kernel-install.c:379 kernel-install.c:556
+#: kernel-install.c:556 kernel-install.c:736
 #, c-format
 msgid "Secure Boot enrollment skipped.\n"
 msgstr ""
 
-#: kernel-install.c:380 kernel-install.c:557
+#: kernel-install.c:557 kernel-install.c:737
 #, c-format
 msgid ""
 "You can enroll the certificate later with: sudo mokutil --import /var/lib/"
 "shim-signed/mok/MOK_goldendoglinux.der\n"
 msgstr ""
 
-#: kernel-install.c:392
+#: kernel-install.c:569
 msgid "Installation Complete"
 msgstr ""
 
-#: kernel-install.c:393
+#: kernel-install.c:570
 msgid "Reboot Now"
 msgstr ""
 
-#: kernel-install.c:394
+#: kernel-install.c:571
 msgid "Reboot Later"
 msgstr ""
 
-#: kernel-install.c:395
+#: kernel-install.c:572
 msgid "Kernel"
 msgstr ""
 
-#: kernel-install.c:397
+#: kernel-install.c:574
 msgid "has been successfully installed"
 msgstr ""
 
-#: kernel-install.c:398 kernel-install.c:411
+#: kernel-install.c:575 kernel-install.c:588
 msgid "If you enrolled Secure Boot, complete the enrollment during reboot"
 msgstr ""
 
-#: kernel-install.c:403
+#: kernel-install.c:580
 #, c-format
 msgid "Rebooting system...\n"
 msgstr ""
 
-#: kernel-install.c:405
+#: kernel-install.c:582
 #, c-format
 msgid ""
 "Remember: If you enrolled Secure Boot, look for the blue MOK Manager "
 "screen!\n"
 msgstr ""
 
-#: kernel-install.c:409
+#: kernel-install.c:586
 msgid "Remember to reboot the machine to boot with the latest kernel"
 msgstr ""
 
-#: kernel-install.c:413
+#: kernel-install.c:590
 msgid "Thank you for using my software"
 msgstr ""
 
-#: kernel-install.c:414
+#: kernel-install.c:591
 msgid "Please keep it free for everyone"
 msgstr ""
 
-#: kernel-install.c:415
+#: kernel-install.c:592
 msgid "Alexia."
 msgstr ""
 
-#: kernel-install.c:431
+#: kernel-install.c:608
 #, c-format
 msgid "Could not determine home directory\n"
 msgstr ""
 
-#: kernel-install.c:440
+#: kernel-install.c:617
 #, c-format
 msgid ""
 "Unsupported Linux distribution. Currently only Debian-based systems are "
 "supported.\n"
 msgstr ""
 
-#: kernel-install.c:444
+#: kernel-install.c:621
 #, c-format
 msgid "Detected distribution: %s\n"
 msgstr ""
 
-#: kernel-install.c:447
+#: kernel-install.c:624
 #, c-format
 msgid "Whiptail installation failed. Continuing with text mode...\n"
 msgstr ""
 
-#: kernel-install.c:451
+#: kernel-install.c:628
 #, c-format
 msgid "Installation cancelled by user.\n"
 msgstr ""
 
-#: kernel-install.c:457
+#: kernel-install.c:634
 #, c-format
 msgid "Creating build directory: %s\n"
 msgstr ""
 
-#: kernel-install.c:465
+#: kernel-install.c:642
 #, c-format
 msgid "Path exists but is not a directory: %s\n"
 msgstr ""
 
-#: kernel-install.c:469
+#: kernel-install.c:646
 msgid "Failed to create build directory"
 msgstr ""
 
-#: kernel-install.c:475
+#: kernel-install.c:652
 #, c-format
 msgid "Installing required packages for %s...\n"
 msgstr ""
 
-#: kernel-install.c:485
+#: kernel-install.c:665
 #, c-format
 msgid "Fetching latest kernel version from kernel.org...\n"
 msgstr ""
 
-#: kernel-install.c:499
+#: kernel-install.c:679
 #, c-format
 msgid "Could not fetch latest kernel version.\n"
 msgstr ""
 
-#: kernel-install.c:505
+#: kernel-install.c:685
 #, c-format
 msgid "Empty version string.\n"
 msgstr ""
 
-#: kernel-install.c:516
+#: kernel-install.c:696
 #, c-format
 msgid "Latest stable kernel: %s\n"
 msgstr ""
 
-#: kernel-install.c:544
+#: kernel-install.c:724
 #, c-format
 msgid "Building and installing kernel for %s...\n"
 msgstr ""
 
-#: kernel-install.c:548
+#: kernel-install.c:728
 #, c-format
 msgid "Updating bootloader for %s...\n"
 msgstr ""
 
-#: kernel-install.c:565
+#: kernel-install.c:745
 #, c-format
 msgid "Build files cleaned up.\n"
 msgstr ""

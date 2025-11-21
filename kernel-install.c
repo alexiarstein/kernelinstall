@@ -28,11 +28,9 @@
 #include <sys/stat.h>
 #include <libintl.h>
 #include <locale.h>
-
 #include <time.h>
 #include <sys/select.h>
 #include <ncurses.h>
-
 #include "distro/common.h"
 #include "distro/debian.h"
 #include "distro/linuxmint.h"
@@ -94,7 +92,8 @@ void update_packaging_timer(WINDOW *bar_win, time_t start_time, char *status_msg
     wrefresh(bar_win);
 }
 
-// Funciones para System Load Monitor
+// Funciones para System Load Monitor - trabajo original en https://github.com/alexiarstein/systemload
+
 int get_cpu_count() {
     FILE *fp = fopen("/proc/cpuinfo", "r");
     if (!fp) return 1;
@@ -153,9 +152,9 @@ void draw_system_load(WINDOW *win, int cpu_count) {
     int bar_width = width - 4;
     int filled = (int)((current_usage / 100.0) * bar_width);
     
-    int color_pair = 1; // Green
-    if (current_usage > 70) color_pair = 3; // Red (definir par 3)
-    else if (current_usage > 35) color_pair = 4; // Yellow (definir par 4)
+    int color_pair = 1; // verde
+    if (current_usage > 70) color_pair = 3; // rojo
+    else if (current_usage > 35) color_pair = 4; // amarillo
     
     if (has_colors()) wattron(win, COLOR_PAIR(color_pair));
     mvwprintw(win, 4, 2, "[");
@@ -170,7 +169,7 @@ void draw_system_load(WINDOW *win, int cpu_count) {
 
     // Stats numéricos
     int start_y = 7;
-    mvwprintw(win, start_y, 2, "%s", _("Load Avg:"));
+    mvwprintw(win, start_y, 2, "%s", _("Load Average:"));
     mvwprintw(win, start_y + 1, 4, "1m : %.2f", loads[0]);
     mvwprintw(win, start_y + 2, 4, "5m : %.2f", loads[1]);
     mvwprintw(win, start_y + 3, 4, "15m: %.2f", loads[2]);
@@ -182,9 +181,6 @@ void draw_system_load(WINDOW *win, int cpu_count) {
 
 int run_build_with_progress(const char *cmd, const char *source_dir) {
     int total_files = count_source_files(source_dir);
-    // Ajuste heurístico: Normalmente solo se compila alrededor del 60% de los drivers/archivos
-    // en una configuración típica (make oldconfig). Esto hace que la barra sea más realista.
-    // UPDATE: Aumentamos a 85% para que la barra vaya más lento al principio y no llegue al 100% antes de tiempo.
     total_files = (total_files * 85) / 100;
     if (total_files == 0) total_files = 1;
 
@@ -235,7 +231,7 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
 
    
     char header_text[256];
-    snprintf(header_text, sizeof(header_text), "Alexia Kernel Installer Version %s", APP_VERSION);
+    snprintf(header_text, sizeof(header_text), _("Kernel Installer Version %s %s"), APP_VERSION, _("by Alexia Michelle <https://github.com/alexiarstein/kernelinstall>"));
     int header_len = strnlen(header_text, sizeof(header_text));
     int header_x = (width - header_len) / 2;
     if (header_x < 0) header_x = 0;
@@ -310,7 +306,7 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
                 wresize(bar_win, bar_height, width);
                 mvwin(bar_win, height - 1, 0);
 
-                // Recalculate split
+                // recalculando el split
                 log_width = (width * 70) / 100;
                 stats_width = width - log_width;
                 wresize(log_win, log_height, log_width);
@@ -319,7 +315,7 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
                 mvwin(stats_win, 2, log_width);
                 
                 werase(header_win);
-                snprintf(header_text, sizeof(header_text), "Alexia Kernel Installer Version %s", APP_VERSION);
+                snprintf(header_text, sizeof(header_text), _("Kernel Installer Version %s %s"), APP_VERSION, _("by Alexia Michelle <https://github.com/alexiarstein/kernelinstall>"));
                 header_len = strnlen(header_text, sizeof(header_text));
                 header_x = (width - header_len) / 2;
                 if (header_x < 0) header_x = 0;
@@ -353,7 +349,6 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
             }
             break;
         } else if (ret == 0) {
-            // Timeout: Actualizar reloj si estamos empaquetando
             if (packaging_started) {
                 update_packaging_timer(bar_win, packaging_start_time, current_status_msg, sizeof(current_status_msg));
             }
@@ -366,8 +361,6 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
             }
             continue;
         }
-
-        // Hay datos para leer
         if (fgets(line, sizeof(line), build_pipe) == NULL) {
             break;
         }
@@ -380,8 +373,6 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
             current_count++;
             int percent = (current_count * 100) / total_files;
             
-            // Pisos de progreso para fases finales
-            // UPDATE: Hacemos los triggers más específicos para evitar saltos prematuros (ej. LD scripts/...)
             if (strstr(line, " LD ") && strstr(line, "vmlinux")) {
                 if (percent < 90) percent = 90;
             }
@@ -389,15 +380,12 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
                 if (percent < 95) percent = 95;
             }
 
-            // Cap al 99% hasta que empiece el empaquetado real
             if (percent > 99) percent = 99;
             
-            // Evitar retrocesos (glitch)
+            // potencial fix para eliminar el glitch en la progressbar (veremos que pasa)
             if (percent < last_percent) percent = last_percent;
             last_percent = percent;
 
-            // Solo dibujar la barra si NO estamos en etapa de empaquetado
-            // para evitar sobrescribir el mensaje de "Building package..."
             if (!packaging_started) {
                 werase(bar_win);
                 mvwprintw(bar_win, 0, 0, "%s [", _("Progress:"));
@@ -420,12 +408,7 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
 
         
         if (!packaging_started) {
-            // Detectar inicio de empaquetado (Debian/Mint)
-            // Usamos solo "dpkg-deb: building package" porque es el paso final.
-            // Otros triggers como "dpkg-buildpackage" pueden aparecer al principio y confundir.
-            // UPDATE: Agregamos trigger en español por si LC_ALL=C falla o el usuario tiene un entorno mixto.
-            if (strstr(line, "dpkg-deb: building package") || strstr(line, "dpkg-deb: construyendo el paquete")) {
-                
+            if (strstr(line, "dpkg-deb: building package") || strstr(line, "dpkg-deb: construyendo el paquete")) {    
                 packaging_started = 1;
                 packaging_start_time = time(NULL);
                 snprintf(current_status_msg, sizeof(current_status_msg), "%s", _("Building kernel and kernel headers .deb package. Please wait..."));
@@ -445,10 +428,8 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
                 wrefresh(bar_win);
             }
         } else {
-            // También actualizamos el timer cuando llegan datos para mantener la fluidez si hay mucho output
             update_packaging_timer(bar_win, packaging_start_time, current_status_msg, sizeof(current_status_msg));
             
-            // Y también los stats si pasó tiempo suficiente
             time_t now = time(NULL);
             if (difftime(now, last_stats_update) >= 2.0) {
                 draw_system_load(stats_win, cpu_count);
@@ -562,7 +543,7 @@ DistroOperations* get_distro_operations(Distro distro) {
     }
 }
 
-// NUEVA FUNCIÓN: Manejar Secure Boot para Mint/Ubuntu
+// NUEVA FUNCIÓN: Secure Boot para Mint/Ubuntu
 void handle_secure_boot_enrollment(Distro distro) {
     if (distro == DISTRO_MINT) {
         // Generar certificado GoldenDogLinux
@@ -628,7 +609,7 @@ int main(void) {
         exit(EXIT_FAILURE);
     }
 
-    // Detectar distribución y obtener operaciones
+    // Detectar distro y obtener operaciones
     Distro distro = detect_distro();
     DistroOperations* ops = get_distro_operations(distro);
     
@@ -667,7 +648,7 @@ int main(void) {
         }
     }
 
-    // Instalar las dependencias específicas de la distribución
+    // Instalar las dependencias específicas de la distro.
     printf(_("Installing required packages for %s...\n"), ops->name);
     ops->install_dependencies();
 
@@ -678,6 +659,9 @@ int main(void) {
 
 
     // Descargar la versión más reciente del kernel
+    // DESARROLLADORES/AS: si quieren que descargue una versión específica, pueden modificar el archivo kernelver.txt
+    // y se descarga el archivo comprimido en lugar de un git clone por que sinó tarda mucho.
+    // - Alexia.
     printf(_("Fetching latest kernel version from kernel.org...\n"));
 
     char tmp_file[512];
@@ -744,7 +728,7 @@ int main(void) {
     printf(_("Updating bootloader for %s...\n"), ops->name);
     ops->update_bootloader();
 
-    // Para Mint/Ubuntu: ofrecer enrolamiento Secure Boot
+    // Para Mint/Ubuntu: ofrecer enrolar la maquina con Secure Boot
     if (distro == DISTRO_MINT) {
         if (mint_ask_secure_boot_enrollment() == 0) {
             mint_enroll_secure_boot_key();
@@ -754,7 +738,7 @@ int main(void) {
         }
     }
 
-    // Limpieza
+    // Limpieza final.
     if (ask_cleanup() == 0) {
         snprintf(cmd, sizeof(cmd), "rm -rf %s/kernel_build", home);
         run(cmd);
