@@ -9,3 +9,5 @@ KERNEL INSTALLER BY Alexia Michelle
 - Added **progressbar** to let people know how long is left until compilation ends.
 - Italian translation (experimental)
 - Added a changelog (this one, heh)
+- Fixed #16 - redibujar y centrar los elementos si se altera la dimensión de la ventana.
+- Fixed #15 - se cancela el programa al alterar la dimensión de la ventana. 
