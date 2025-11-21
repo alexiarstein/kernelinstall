@@ -68,6 +68,9 @@ int count_source_files(const char *dir) {
 
 int run_build_with_progress(const char *cmd, const char *source_dir) {
     int total_files = count_source_files(source_dir);
+    // Ajuste heurístico: Normalmente solo se compila alrededor del 60% de los drivers/archivos
+    // en una configuración típica (make oldconfig). Esto hace que la barra sea más realista.
+    total_files = (total_files * 60) / 100;
     if (total_files == 0) total_files = 1;
 
     initscr();
@@ -227,7 +230,13 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
 
         
         if (!packaging_started) {
-            if (strstr(line, "dpkg-deb: building package")) {
+            // Detectar inicio de empaquetado (Debian/Mint) - Varios triggers posibles
+            if (strstr(line, "dpkg-deb: building package") || 
+                strstr(line, "dpkg-buildpackage") ||
+                strstr(line, "dpkg-gencontrol") ||
+                strstr(line, "scripts/package/builddeb") ||
+                strstr(line, "run_build_with_progress")) { // Fallback por si acaso aparece el nombre de la funcion en logs (poco probable pero bueno)
+                
                 packaging_started = 1;
                 snprintf(current_status_msg, sizeof(current_status_msg), "%s", _("Building kernel and kernel headers .deb package. Please wait..."));
                 werase(bar_win);
@@ -235,7 +244,7 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
                 mvwprintw(bar_win, 0, 0, "%s", current_status_msg);
                 if (has_colors()) wattroff(bar_win, COLOR_PAIR(2) | A_BOLD);
                 wrefresh(bar_win);
-            } else if (strstr(line, "Processing files:")) {
+            } else if (strstr(line, "Processing files:") || strstr(line, "rpmbuild")) {
                 packaging_started = 1;
                 snprintf(current_status_msg, sizeof(current_status_msg), "%s", _("Building kernel .rpm package. Please wait..."));
                 werase(bar_win);
