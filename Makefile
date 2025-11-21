@@ -4,8 +4,17 @@
 # --------------------------------------------------
 
 CC = gcc
-CFLAGS = -Wall -Wextra -g -D_FORTIFY_SOURCE=2 $(shell pkg-config --cflags ncursesw)
-LDFLAGS = $(shell pkg-config --libs ncursesw)
+PKG_CONFIG ?= pkg-config
+NCURSES_CFLAGS := $(shell $(PKG_CONFIG) --cflags ncursesw 2>/dev/null)
+NCURSES_LIBS := $(shell $(PKG_CONFIG) --libs ncursesw 2>/dev/null)
+
+ifeq ($(NCURSES_LIBS),)
+    NCURSES_CFLAGS = -D_GNU_SOURCE
+    NCURSES_LIBS = -lncursesw
+endif
+
+CFLAGS = -Wall -Wextra -g -D_FORTIFY_SOURCE=2 $(NCURSES_CFLAGS)
+LDFLAGS = $(NCURSES_LIBS)
 OBJ = kernel-install.o
 TARGET = kernel-installer
 DISTRO_DIR = distro
