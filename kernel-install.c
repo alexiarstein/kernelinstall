@@ -381,10 +381,11 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
             int percent = (current_count * 100) / total_files;
             
             // Pisos de progreso para fases finales
-            if (strstr(line, " LD ")) {
+            // UPDATE: Hacemos los triggers más específicos para evitar saltos prematuros (ej. LD scripts/...)
+            if (strstr(line, " LD ") && strstr(line, "vmlinux")) {
                 if (percent < 90) percent = 90;
             }
-            if (strstr(line, " XZ ") || strstr(line, " INSTALL ")) {
+            if (strstr(line, " XZ ") && strstr(line, "arch/")) {
                 if (percent < 95) percent = 95;
             }
 
