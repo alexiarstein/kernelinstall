@@ -28,7 +28,7 @@
 #include <sys/stat.h>
 #include <libintl.h>
 #include <locale.h>
-#include <locale.h>
+
 #include <time.h>
 #include <sys/select.h>
 #include <ncurses.h>
@@ -69,6 +69,108 @@ int count_source_files(const char *dir) {
     return atoi(buf);
 }
 
+void update_packaging_timer(WINDOW *bar_win, time_t start_time, char *status_msg, size_t msg_size) {
+    time_t now = time(NULL);
+    double elapsed = difftime(now, start_time);
+    int hours = (int)elapsed / 3600;
+    int minutes = ((int)elapsed % 3600) / 60;
+    int seconds = (int)elapsed % 60;
+    
+    // Determinar mensaje base (DEB o RPM)
+    const char* base_msg = _("Building kernel and kernel headers .deb package. Please wait...");
+    if (strstr(status_msg, "rpm")) {
+        base_msg = _("Building kernel .rpm package. Please wait...");
+    }
+
+    snprintf(status_msg, msg_size, 
+             "%s [ %s: %02d:%02d:%02d ]", 
+             base_msg,
+             _("Elapsed"), hours, minutes, seconds);
+    
+    werase(bar_win);
+    if (has_colors()) wattron(bar_win, COLOR_PAIR(2) | A_BOLD);
+    mvwprintw(bar_win, 0, 0, "%s", status_msg);
+    if (has_colors()) wattroff(bar_win, COLOR_PAIR(2) | A_BOLD);
+    wrefresh(bar_win);
+}
+
+// Funciones para System Load Monitor
+int get_cpu_count() {
+    FILE *fp = fopen("/proc/cpuinfo", "r");
+    if (!fp) return 1;
+    
+    char line[256];
+    int count = 0;
+    while (fgets(line, sizeof(line), fp)) {
+        if (strncmp(line, "processor", 9) == 0) {
+            count++;
+        }
+    }
+    fclose(fp);
+    if (count == 0) count = 1;
+    return count;
+}
+
+void get_load_avg(double *loads) {
+    FILE *fp = fopen("/proc/loadavg", "r");
+    if (fp) {
+        fscanf(fp, "%lf %lf %lf", &loads[0], &loads[1], &loads[2]);
+        fclose(fp);
+    } else {
+        loads[0] = loads[1] = loads[2] = 0.0;
+    }
+}
+
+void draw_system_load(WINDOW *win, int cpu_count) {
+    double loads[3];
+    get_load_avg(loads);
+    
+    double current_usage = (loads[0] / cpu_count) * 100.0;
+    if (current_usage > 100.0) current_usage = 100.0;
+
+    werase(win);
+    box(win, 0, 0);
+    
+    int width, height;
+    getmaxyx(win, height, width);
+    
+    if (has_colors()) wattron(win, A_BOLD);
+    mvwprintw(win, 1, (width - 11) / 2, "SYSTEM LOAD");
+    if (has_colors()) wattroff(win, A_BOLD);
+    
+    mvwhline(win, 2, 1, ACS_HLINE, width - 2);
+
+    // Barra de carga
+    int bar_width = width - 4;
+    int filled = (int)((current_usage / 100.0) * bar_width);
+    
+    int color_pair = 1; // Green
+    if (current_usage > 70) color_pair = 3; // Red (definir par 3)
+    else if (current_usage > 35) color_pair = 4; // Yellow (definir par 4)
+    
+    if (has_colors()) wattron(win, COLOR_PAIR(color_pair));
+    mvwprintw(win, 4, 2, "[");
+    for (int i = 0; i < bar_width - 2; i++) {
+        if (i < filled) waddch(win, '|');
+        else waddch(win, ' ');
+    }
+    waddch(win, ']');
+    if (has_colors()) wattroff(win, COLOR_PAIR(color_pair));
+    
+    mvwprintw(win, 5, (width - 10) / 2, "%.2f%%", current_usage);
+
+    // Stats numéricos
+    int start_y = 7;
+    mvwprintw(win, start_y, 2, "Load Avg:");
+    mvwprintw(win, start_y + 1, 4, "1m : %.2f", loads[0]);
+    mvwprintw(win, start_y + 2, 4, "5m : %.2f", loads[1]);
+    mvwprintw(win, start_y + 3, 4, "15m: %.2f", loads[2]);
+    
+    mvwprintw(win, start_y + 5, 2, "Cores: %d", cpu_count);
+
+    wrefresh(win);
+}
+
 int run_build_with_progress(const char *cmd, const char *source_dir) {
     int total_files = count_source_files(source_dir);
     // Ajuste heurístico: Normalmente solo se compila alrededor del 60% de los drivers/archivos
@@ -86,6 +188,8 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
         start_color();
         init_pair(1, COLOR_GREEN, COLOR_BLACK);
         init_pair(2, COLOR_CYAN, COLOR_BLACK); 
+        init_pair(3, COLOR_RED, COLOR_BLACK);
+        init_pair(4, COLOR_YELLOW, COLOR_BLACK);
     }
 
     int height, width;
@@ -103,11 +207,22 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
   
     WINDOW *header_win = newwin(header_height, width, 0, 0);
     WINDOW *sep1_win = newwin(sep1_height, width, 1, 0);
-    WINDOW *log_win = newwin(log_height, width, 2, 0);
+    
+    // Split layout: 70% Log, 30% Stats
+    int log_width = (width * 70) / 100;
+    int stats_width = width - log_width;
+    
+    WINDOW *log_win = newwin(log_height, log_width, 2, 0);
+    WINDOW *stats_win = newwin(log_height, stats_width, 2, log_width);
+    
     WINDOW *sep2_win = newwin(sep2_height, width, height - 2, 0);
     WINDOW *bar_win = newwin(bar_height, width, height - 1, 0);
 
     scrollok(log_win, TRUE);
+    
+    // Initial stats draw
+    int cpu_count = get_cpu_count();
+    draw_system_load(stats_win, cpu_count);
 
    
     char header_text[256];
@@ -147,6 +262,7 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
     int fd = fileno(build_pipe);
     fd_set readfds;
     struct timeval timeout; 
+    time_t last_stats_update = time(NULL); 
 
     while (1) {
         FD_ZERO(&readfds);
@@ -184,6 +300,13 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
                 wresize(bar_win, bar_height, width);
                 mvwin(bar_win, height - 1, 0);
 
+                // Recalculate split
+                log_width = (width * 70) / 100;
+                stats_width = width - log_width;
+                wresize(log_win, log_height, log_width);
+                mvwin(log_win, 2, 0);
+                wresize(stats_win, log_height, stats_width);
+                mvwin(stats_win, 2, log_width);
                 
                 werase(header_win);
                 snprintf(header_text, sizeof(header_text), "Alexia Kernel Installer Version %s", APP_VERSION);
@@ -206,6 +329,7 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
 
              
                 wrefresh(log_win); 
+                draw_system_load(stats_win, cpu_count);
                 
                 if (packaging_started) {
                     werase(bar_win);
@@ -221,28 +345,14 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
         } else if (ret == 0) {
             // Timeout: Actualizar reloj si estamos empaquetando
             if (packaging_started) {
-                time_t now = time(NULL);
-                double elapsed = difftime(now, packaging_start_time);
-                int hours = (int)elapsed / 3600;
-                int minutes = ((int)elapsed % 3600) / 60;
-                int seconds = (int)elapsed % 60;
-                
-                // Determinar mensaje base (DEB o RPM)
-                const char* base_msg = _("Building kernel and kernel headers .deb package. Please wait...");
-                if (strstr(current_status_msg, "rpm")) {
-                    base_msg = _("Building kernel .rpm package. Please wait...");
-                }
-
-                snprintf(current_status_msg, sizeof(current_status_msg), 
-                         "%s [ %s: %02d:%02d:%02d ]", 
-                         base_msg,
-                         _("Elapsed"), hours, minutes, seconds);
-                
-                werase(bar_win);
-                if (has_colors()) wattron(bar_win, COLOR_PAIR(2) | A_BOLD);
-                mvwprintw(bar_win, 0, 0, "%s", current_status_msg);
-                if (has_colors()) wattroff(bar_win, COLOR_PAIR(2) | A_BOLD);
-                wrefresh(bar_win);
+                update_packaging_timer(bar_win, packaging_start_time, current_status_msg, sizeof(current_status_msg));
+            }
+            
+            // Actualizar stats cada 2 segundos (aprox)
+            time_t now = time(NULL);
+            if (difftime(now, last_stats_update) >= 2.0) {
+                draw_system_load(stats_win, cpu_count);
+                last_stats_update = now;
             }
             continue;
         }
@@ -319,29 +429,15 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
                 wrefresh(bar_win);
             }
         } else {
-            // Si ya empezó el empaquetado, actualizamos el timer con cada línea de log
+            // También actualizamos el timer cuando llegan datos para mantener la fluidez si hay mucho output
+            update_packaging_timer(bar_win, packaging_start_time, current_status_msg, sizeof(current_status_msg));
+            
+            // Y también los stats si pasó tiempo suficiente
             time_t now = time(NULL);
-            double elapsed = difftime(now, packaging_start_time);
-            int hours = (int)elapsed / 3600;
-            int minutes = ((int)elapsed % 3600) / 60;
-            int seconds = (int)elapsed % 60;
-            
-            // Determinar mensaje base (DEB o RPM)
-            const char* base_msg = _("Building kernel and kernel headers .deb package. Please wait...");
-            if (strstr(current_status_msg, "rpm")) {
-                base_msg = _("Building kernel .rpm package. Please wait...");
+            if (difftime(now, last_stats_update) >= 2.0) {
+                draw_system_load(stats_win, cpu_count);
+                last_stats_update = now;
             }
-
-            snprintf(current_status_msg, sizeof(current_status_msg), 
-                     "%s [ %s: %02d:%02d:%02d ]", 
-                     base_msg,
-                     _("Elapsed"), hours, minutes, seconds);
-            
-            werase(bar_win);
-            if (has_colors()) wattron(bar_win, COLOR_PAIR(2) | A_BOLD);
-            mvwprintw(bar_win, 0, 0, "%s", current_status_msg);
-            if (has_colors()) wattroff(bar_win, COLOR_PAIR(2) | A_BOLD);
-            wrefresh(bar_win);
         }
     }
 
