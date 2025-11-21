@@ -6,7 +6,7 @@
 # ./kernel-installer
 
 compilar() {
-sudo apt install -y gcc make gettext
+sudo apt install -y gcc make gettext libncurses-dev
 make clean
 make
 sudo make install
