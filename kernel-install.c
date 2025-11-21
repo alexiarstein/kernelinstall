@@ -52,6 +52,84 @@ int run(const char *cmd) {
     return r;
 }
 
+// New function to verify SHA256 checksum: If matches, kernel source do not need to be re-downloaded
+int verify_sha256(const char *filepath, const char *expected_sha256) {
+    char cmd[1024];
+    snprintf(cmd, sizeof(cmd), "sha256sum %s | awk '{print $1}'", filepath);
+    
+    FILE *fp = popen(cmd, "r");
+    if (!fp) return 0;
+    
+    char actual_sha256[128];
+    if (!fgets(actual_sha256, sizeof(actual_sha256), fp)) {
+        pclose(fp);
+        return 0;
+    }
+    pclose(fp);
+    
+    // Remove newline
+    char *newline = strchr(actual_sha256, '\n');
+    if (newline) *newline = '\0';
+    
+    return strcmp(actual_sha256, expected_sha256) == 0;
+}
+
+// New function to download and return SHA256 checksum
+// prevent downloading xz file, if I cant verify checksum existing
+int get_kernel_sha256(const char *version, char *sha256_out, size_t sha256_size) {
+    char tmp_sha_file[512];
+    const char *home = getenv("HOME");
+    if (!home) return -1;
+    
+    // Use build directory instead of /tmp for security
+    snprintf(tmp_sha_file, sizeof(tmp_sha_file), 
+             "%s/kernel_build/kernel-%s.sha256", home, version);
+    
+    char cmd[1024];
+    snprintf(cmd, sizeof(cmd),
+             "wget -q -O %s https://cdn.kernel.org/pub/linux/kernel/v%c.x/sha256sums.asc",
+             tmp_sha_file, version[0]);
+    
+    if (system(cmd) != 0) {
+        fprintf(stderr, "Warning: Could not download SHA256 checksums\n");
+        return -1;
+    }
+    
+    // Extract SHA256 for our specific kernel version
+    snprintf(cmd, sizeof(cmd),
+             "grep 'linux-%s.tar.xz' %s | awk '{print $1}'",
+             version, tmp_sha_file);
+    
+    FILE *fp = popen(cmd, "r");
+    if (!fp) {
+        unlink(tmp_sha_file);
+        return -1;
+    }
+    
+    if (!fgets(sha256_out, sha256_size, fp)) {
+        pclose(fp);
+        unlink(tmp_sha_file);
+        return -1;
+    }
+    pclose(fp);
+    unlink(tmp_sha_file);
+    
+    // Remove newline
+    char *newline = strchr(sha256_out, '\n');
+    if (newline) *newline = '\0';
+    
+    // Ensure null-termination before using strlen
+    sha256_out[sha256_size - 1] = '\0';
+    
+    // Verify the string is exactly 64 characters (valid SHA256)
+    size_t len = 0;
+    while (sha256_out[len] != '\0' && len < sha256_size) {
+        len++;
+    }
+    
+    return (len == 64) ? 0 : -1;
+}
+
 int count_source_files(const char *dir) {
     char cmd[1024];
     snprintf(cmd, sizeof(cmd), "find %s -name '*.c' | wc -l", dir);
@@ -304,6 +382,85 @@ int ask_cleanup() {
     return result;
 }
 
+// New function to check if kernel is already built, to skip rebuild if not necessary
+int is_kernel_built(const char *source_dir, const char *version, const char *tag) {
+    char vmlinuz_path[1024];
+    char system_map_path[1024];
+    
+    // Check for vmlinuz (different names on different architectures)
+    snprintf(vmlinuz_path, sizeof(vmlinuz_path), 
+             "%s/arch/x86/boot/bzImage", source_dir);
+    
+    snprintf(system_map_path, sizeof(system_map_path),
+             "%s/System.map", source_dir);
+    
+    struct stat st;
+    int vmlinuz_exists = (stat(vmlinuz_path, &st) == 0);
+    int system_map_exists = (stat(system_map_path, &st) == 0);
+    
+    if (vmlinuz_exists && system_map_exists) {
+        // Additional check: verify the kernel version in the built image
+        char version_check[2048];  // Increased buffer size to avoid truncation
+        snprintf(version_check, sizeof(version_check),
+                 "strings %s | grep -q 'Linux version %s%s'",
+                 vmlinuz_path, version, tag);
+        
+        if (system(version_check) == 0) {
+            return 1; // Kernel is already built with correct version
+        }
+    }
+    
+    return 0; // Kernel not built or version mismatch
+}
+
+// New function to check if kernel packages already exist
+int are_packages_built(const char *home, const char *version, const char *tag, Distro distro) {
+    char package_path[1024];
+    
+    if (distro == DISTRO_DEBIAN || distro == DISTRO_MINT) {
+        // Check for .deb packages
+        snprintf(package_path, sizeof(package_path),
+                 "%s/kernel_build/linux-image-%s%s_*.deb", home, version, tag);
+        
+        // Use glob to check if pattern matches any files
+        char check_cmd[1024];
+        snprintf(check_cmd, sizeof(check_cmd),
+                 "ls %s/kernel_build/linux-image-%s%s_*.deb 2>/dev/null | grep -q .",
+                 home, version, tag);
+        
+        return (system(check_cmd) == 0);
+        
+    } else if (distro == DISTRO_FEDORA) {
+        // Check for .rpm packages
+        snprintf(package_path, sizeof(package_path),
+                 "%s/kernel_build/linux-%s/kernel-%s%s*.rpm", 
+                 home, version, version, tag);
+        
+        char check_cmd[1024];
+        snprintf(check_cmd, sizeof(check_cmd),
+                 "ls %s/kernel_build/linux-%s/kernel-%s%s*.rpm 2>/dev/null | grep -q .",
+                 home, version, version, tag);
+        
+        return (system(check_cmd) == 0);
+    }
+    
+    return 0;
+}
+
+// New function to ask user about rebuild
+int ask_rebuild() {
+    char command[768];
+    snprintf(command, sizeof(command),
+             "whiptail --title \"%s\" "
+             "--yesno \"%s\\n\\n%s\\n\\n%s?\" 14 70",
+             "Kernel Already Built",
+             "The kernel appears to be already compiled in the build directory.",
+             "Building again will take 2-3 hours and may not be necessary.",
+             "Do you want to rebuild from scratch");
+    
+    return system(command);
+}
+
 // ========== FIN DE FUNCIONES AUXILIARES ==========
 
 Distro detect_distro() {
@@ -503,11 +660,87 @@ int main(void) {
 
   
     char cmd[1024];
-    snprintf(cmd, sizeof(cmd),
-             "cd %s/kernel_build && "
-             "wget -O linux-%s.tar.xz https://cdn.kernel.org/pub/linux/kernel/v%c.x/linux-%s.tar.xz",
-             home, latest, latest[0], latest);
-    run(cmd);
+    // Check if kernel tarball already exists
+    char tarball_path[512];
+    snprintf(tarball_path, sizeof(tarball_path),
+             "%s/kernel_build/linux-%s.tar.xz", home, latest);
+    
+    int need_download = 1;
+    struct stat st;
+    if (stat(tarball_path, &st) == 0) {
+        printf("Kernel source tarball already exists. Verifying checksum...\n");
+        
+        char expected_sha256[128];
+        if (get_kernel_sha256(latest, expected_sha256, sizeof(expected_sha256)) == 0) {
+            if (verify_sha256(tarball_path, expected_sha256)) {
+                printf("Checksum verification passed. Kernel source already downloaded, reusing existing file.\n");
+                need_download = 0;
+            } else {
+                printf("Checksum verification failed. Existing file is corrupted or outdated.\n");
+                printf("Deleting existing file and downloading fresh copy from kernel.org...\n");
+                unlink(tarball_path);
+            }
+        } else {
+            printf("Warning: Could not verify checksum. Reusing existing file.\n");
+            need_download = 0;
+        }
+    }
+
+    // Descargar el kernel solo si es necesario
+    if (need_download) {
+        snprintf(cmd, sizeof(cmd),
+                 "cd %s/kernel_build && "
+                 "wget -O linux-%s.tar.xz https://cdn.kernel.org/pub/linux/kernel/v%c.x/linux-%s.tar.xz",
+                 home, latest, latest[0], latest);
+        run(cmd);
+    }
+
+    // Check if source is already extracted
+    char source_dir[512];
+    snprintf(source_dir, sizeof(source_dir), "%s/kernel_build/linux-%s", home, latest);
+    
+    int need_extract = 1;
+    if (stat(source_dir, &st) == 0 && S_ISDIR(st.st_mode)) {
+        printf("Kernel source directory already exists. Skipping extraction.\n");
+        need_extract = 0;
+    }
+
+    if (need_extract) {
+        snprintf(cmd, sizeof(cmd),
+                 "cd %s/kernel_build && tar -xf linux-%s.tar.xz", home, latest);
+        run(cmd);
+    }
+
+    // Check if kernel is already built
+    int kernel_already_built = is_kernel_built(source_dir, latest, TAG);
+    int packages_already_built = are_packages_built(home, latest, TAG, distro);
+    
+    if (kernel_already_built || packages_already_built) {
+        printf("\n========================================\n");
+        if (kernel_already_built) {
+            printf("Compiled kernel binary (vmlinuz) detected in build directory.\n");
+        }
+        if (packages_already_built) {
+            printf("Installation packages (.deb/.rpm) already exist in build directory.\n");
+        }
+        printf("Build appears to be complete.\n");
+        printf("========================================\n\n");
+        
+        if (ask_rebuild() != 0) {
+            printf("Skipping rebuild. Using existing compiled kernel.\n");
+            printf("Proceeding directly to installation...\n\n");
+            
+            // Skip to installation phase
+            goto install_phase;
+        } else {
+            printf("User chose to rebuild. Starting clean build...\n");
+            // Clean the build directory
+            snprintf(cmd, sizeof(cmd),
+                     "cd %s/kernel_build/linux-%s && make mrproper",
+                     home, latest);
+            run(cmd);
+        }
+    }
 
     snprintf(cmd, sizeof(cmd),
              "cd %s/kernel_build && tar -xf linux-%s.tar.xz", home, latest);
@@ -530,7 +763,8 @@ int main(void) {
     printf(_("Building and installing kernel for %s...\n"), ops->name);
     ops->build_and_install(home, latest, TAG);
 
-    
+install_phase:
+    // Actualizar bootloader
     printf(_("Updating bootloader for %s...\n"), ops->name);
     ops->update_bootloader();
 
