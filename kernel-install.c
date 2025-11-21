@@ -264,6 +264,7 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
 
     char line[1024];
     int current_count = 0;
+    int last_percent = 0; // Para evitar que la barra retroceda
     int packaging_started = 0;
     time_t packaging_start_time = 0;
     char current_status_msg[256] = ""; 
@@ -389,6 +390,10 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
 
             // Cap al 99% hasta que empiece el empaquetado real
             if (percent > 99) percent = 99;
+            
+            // Evitar retrocesos (glitch)
+            if (percent < last_percent) percent = last_percent;
+            last_percent = percent;
 
             // Solo dibujar la barra si NO estamos en etapa de empaquetado
             // para evitar sobrescribir el mensaje de "Building package..."
@@ -417,7 +422,8 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
             // Detectar inicio de empaquetado (Debian/Mint)
             // Usamos solo "dpkg-deb: building package" porque es el paso final.
             // Otros triggers como "dpkg-buildpackage" pueden aparecer al principio y confundir.
-            if (strstr(line, "dpkg-deb: building package")) {
+            // UPDATE: Agregamos trigger en español por si LC_ALL=C falla o el usuario tiene un entorno mixto.
+            if (strstr(line, "dpkg-deb: building package") || strstr(line, "dpkg-deb: construyendo el paquete")) {
                 
                 packaging_started = 1;
                 packaging_start_time = time(NULL);

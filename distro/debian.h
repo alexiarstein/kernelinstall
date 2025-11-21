@@ -21,7 +21,7 @@ void debian_build_and_install(const char* home, const char* version, const char*
     snprintf(source_dir, sizeof(source_dir), "%s/kernel_build/linux-%s", home, version);
     
     snprintf(cmd, sizeof(cmd),
-             "cd %s && stdbuf -oL -eL fakeroot make -j$(nproc) bindeb-pkg",
+             "cd %s && stdbuf -oL -eL LC_ALL=C fakeroot make -j$(nproc) bindeb-pkg",
              source_dir);
     run_build_with_progress(cmd, source_dir);
     
