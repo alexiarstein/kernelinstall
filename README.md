@@ -31,6 +31,10 @@ Downloads, configures, compiles and installs the latest stable kernel from kerne
 
 Read the changelog [https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.17.8](https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.17.8)
 
+## Questions, reporting problems, etc.
+
+Read answered existing questions, bug reports and or create your own at [Issues](https://github.com/alexiarstein/kernelinstall/issues?q=is%3Aissue) section of the repository.
+
 ## Language Support
 
  * English
