@@ -11,11 +11,10 @@ Downloads, configures, compiles and installs the latest stable kernel from kerne
 
  * 1 Clone the repository
  * 2 ```cd kernelinstall```
- * 3 ```make && sudo make install```
- * 4 run ```kernel-installer```
+ * 3 run the following:```bash compilar.sh```
 
-When compiling from source, be sure to have the required packages installed (make, gcc, gettext) as these are required. 
-
+**Note:** compilar.sh only works for debian and ubuntu-based distros for now. If you want to compile it on other distros, you will need to do it manually.
+```cd kernelinstall; make && sudo make install```
 
 ## Supported Distros:
 
@@ -28,25 +27,21 @@ When compiling from source, be sure to have the required packages installed (mak
  * ElementaryOS
  * PopOS!
 
-## Y en que cambia las cosas?
+## What's New?
 
-leé el changelog [https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.17.8](https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.17.8)
+Read the changelog [https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.17.8](https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.17.8)
 
 ## Language Support
 
  * English
  * Spanish
+ * Italian (Experimental)
 
 
 This is a simple tool that fetches the latest stable kernel release from [kernel.org](https://kernel.org)
 configures it for debian, compiles and installs it.
 
-For now it only works on debian or distros that use debian as their upstream.
-
-
-It needs testing on ubuntu, mint, elementary or some of those. Please create an issue if you are willing to test with the results.
-
-Thanks!
+For now it only supports debian or ubuntu based distros. Support for fedora, RHEL, RockyLinux, Almalinux and Oracle will be ready soon.
 
 -- Alexia.
 

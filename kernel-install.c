@@ -1,9 +1,25 @@
-// Kernel Installer - Control Program
-// This execution wrapper follows the logic of downloading, compiling
-// and installing the latest Linux Kernel from kernel.org
-// Modular version with distro-specific support
-// Author: Alexia Michelle <alexia@goldendoglinux.org>
-// LICENSE: GNU GPL 3.0 (see LICENSE for more info)
+/*
+ * Kernel Installer - Control Program
+ * Copyright (C) 2025 Alexia Michelle <alexia@goldendoglinux.org>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * This execution wrapper follows the logic of downloading, compiling
+ * and installing the latest Linux Kernel from kernel.org
+ * Modular version with distro-specific support
+ * see CHANGELOG for more info.
+ */
+ 
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -119,7 +135,14 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
     int current_count = 0;
     int packaging_started = 0;
 
-    while (fgets(line, sizeof(line), build_pipe)) {
+    while (1) {
+        if (fgets(line, sizeof(line), build_pipe) == NULL) {
+            if (errno == EINTR) {
+                clearerr(build_pipe);
+                continue;
+            }
+            break;
+        }
         wprintw(log_win, "%s", line);
         wrefresh(log_win);
 
