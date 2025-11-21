@@ -1,13 +1,20 @@
 KERNEL INSTALLER BY Alexia Michelle
 -----------------------------------
 
+
+
+2025-11-21:
+
+- Corregido #17 - guardar el mensaje de construir paquete en una variable y redibujarlo si se altera la dimensión de la ventana.
+- cambié el changelog al español por que era una mezcla de inglés y castellano horrible.
+
 2025-11-20:
 
-- Refatored detect_distro to be more modular and easier to scale.
-- Improved interface vía ncurses.
-- Added support for fedora. (experimental)
-- Added **progressbar** to let people know how long is left until compilation ends.
-- Italian translation (experimental)
-- Added a changelog (this one, heh)
-- Fixed #16 - redibujar y centrar los elementos si se altera la dimensión de la ventana.
-- Fixed #15 - se cancela el programa al alterar la dimensión de la ventana. 
+- refactorizado detect_distro. para darle escalabilidad. Ahora se pueden agregar en el header distros/distro.h según grupo
+- Interfaz mejorada gracias a ncurses.
+- Soporte para fedora. (experimental)
+- Barra de progreso para mostrar cuánto tiempo le queda a la compilación.
+- Traducción al italiano (experimental)
+- Agregado changelog (este archivo, jaja)
+- Corregido #16 - redibujar y centrar los elementos si se altera la dimensión de la ventana.
+- Corregido #15 - se cancela el programa al alterar la dimensión de la ventana. 

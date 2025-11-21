@@ -1,6 +1,7 @@
 # Kernel Installer Makefile
 # Author: Alexia Michelle <alexia@goldendoglinux.org>
 # LICENSE: GNU GPL 3.0
+# --------------------------------------------------
 
 CC = gcc
 CFLAGS = -Wall -Wextra -g -D_FORTIFY_SOURCE=2

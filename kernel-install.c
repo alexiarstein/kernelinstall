@@ -36,11 +36,11 @@
 #include "distro/fedora.h"
 #include "distro/distros.h"
 
-#define APP_VERSION "1.2.5"
+#define APP_VERSION "1.3.0"
 #define _(string) gettext(string)
-#define BUBU "bubu"
+#define BUBU "bubu" // menos pregunta dios y perdona
 
-// ========== FUNCIONES AUXILIARES QUE FALTAN ==========
+// ========== INICIO FUNC AUXILIARES ==========
 
 int run(const char *cmd) {
     printf("\n %s: %s\n", _("Running"), cmd);
@@ -134,7 +134,7 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
     char line[1024];
     int current_count = 0;
     int packaging_started = 0;
-    char current_status_msg[256] = ""; // Track status message for redraw
+    char current_status_msg[256] = ""; 
 
     while (1) {
         if (fgets(line, sizeof(line), build_pipe) == NULL) {
@@ -186,7 +186,6 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
              
                 wrefresh(log_win); 
                 
-                // Redraw packaging message if active
                 if (packaging_started) {
                     werase(bar_win);
                     if (has_colors()) wattron(bar_win, COLOR_PAIR(2) | A_BOLD);
@@ -442,7 +441,7 @@ int main(void) {
     char build_dir[512];
     snprintf(build_dir, sizeof(build_dir), "%s/kernel_build", home);
     printf(_("Creating build directory: %s\n"), build_dir);
-
+// patch de seguridad.
     if (mkdir(build_dir, 0755) != 0) {
         if (errno == EEXIST) {
             struct stat st;
