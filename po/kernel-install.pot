@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-20 20:29-0300\n"
+"POT-Creation-Date: 2025-11-20 22:41-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,219 +17,222 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: kernel-install.c:29
+#: kernel-install.c:30
 msgid "Running"
 msgstr ""
 
-#: kernel-install.c:32
+#: kernel-install.c:33
 #, c-format
 msgid " Command failed: %s (exit %d)\n"
 msgstr ""
 
-#: kernel-install.c:132
+#: kernel-install.c:133
 msgid "Progress:"
 msgstr ""
 
-#: kernel-install.c:161
-#, c-format
-msgid "Packaging started. Switching to standard output...\n"
+#: kernel-install.c:158
+msgid "Building kernel and kernel headers .deb package. Please wait..."
 msgstr ""
 
-#: kernel-install.c:172
+#: kernel-install.c:165
+msgid "Building kernel .rpm package. Please wait..."
+msgstr ""
+
+#: kernel-install.c:178
 #, c-format
 msgid "whiptail not found. Installing...\n"
 msgstr ""
 
-#: kernel-install.c:176
+#: kernel-install.c:182
 #, c-format
 msgid "Cannot install whiptail on this distribution\n"
 msgstr ""
 
-#: kernel-install.c:181
+#: kernel-install.c:187
 #, c-format
 msgid "Failed to install whiptail\n"
 msgstr ""
 
-#: kernel-install.c:185
+#: kernel-install.c:191
 #, c-format
 msgid "whiptail installed successfully. Restarting application...\n"
 msgstr ""
 
-#: kernel-install.c:187
+#: kernel-install.c:193
 msgid "Failed to restart"
 msgstr ""
 
-#: kernel-install.c:201
+#: kernel-install.c:207
 msgid "Alexia Kernel Installer"
 msgstr ""
 
-#: kernel-install.c:202
+#: kernel-install.c:208
 msgid "Alexia Kernel Installer Version"
 msgstr ""
 
-#: kernel-install.c:203
+#: kernel-install.c:209
 msgid ""
 "This program will download, compile and install the latest stable kernel "
 "from kernel.org."
 msgstr ""
 
-#: kernel-install.c:204
+#: kernel-install.c:210
 msgid "The process may take up to three hours in some systems."
 msgstr ""
 
-#: kernel-install.c:205
+#: kernel-install.c:211
 msgid "Do you wish to continue"
 msgstr ""
 
-#: kernel-install.c:216
+#: kernel-install.c:222
 msgid "Cleanup Build Files"
 msgstr ""
 
-#: kernel-install.c:217
+#: kernel-install.c:223
 msgid "Do you want to clean up the build files"
 msgstr ""
 
-#: kernel-install.c:276 kernel-install.c:453
+#: kernel-install.c:293 kernel-install.c:470
 #, c-format
 msgid "Secure Boot enrollment skipped.\n"
 msgstr ""
 
-#: kernel-install.c:277 kernel-install.c:454
+#: kernel-install.c:294 kernel-install.c:471
 #, c-format
 msgid ""
 "You can enroll the certificate later with: sudo mokutil --import /var/lib/"
 "shim-signed/mok/MOK_goldendoglinux.der\n"
 msgstr ""
 
-#: kernel-install.c:289
+#: kernel-install.c:306
 msgid "Installation Complete"
 msgstr ""
 
-#: kernel-install.c:290
+#: kernel-install.c:307
 msgid "Reboot Now"
 msgstr ""
 
-#: kernel-install.c:291
+#: kernel-install.c:308
 msgid "Reboot Later"
 msgstr ""
 
-#: kernel-install.c:292
+#: kernel-install.c:309
 msgid "Kernel"
 msgstr ""
 
-#: kernel-install.c:294
+#: kernel-install.c:311
 msgid "has been successfully installed"
 msgstr ""
 
-#: kernel-install.c:295 kernel-install.c:308
+#: kernel-install.c:312 kernel-install.c:325
 msgid "If you enrolled Secure Boot, complete the enrollment during reboot"
 msgstr ""
 
-#: kernel-install.c:300
+#: kernel-install.c:317
 #, c-format
 msgid "Rebooting system...\n"
 msgstr ""
 
-#: kernel-install.c:302
+#: kernel-install.c:319
 #, c-format
 msgid ""
 "Remember: If you enrolled Secure Boot, look for the blue MOK Manager "
 "screen!\n"
 msgstr ""
 
-#: kernel-install.c:306
+#: kernel-install.c:323
 msgid "Remember to reboot the machine to boot with the latest kernel"
 msgstr ""
 
-#: kernel-install.c:310
+#: kernel-install.c:327
 msgid "Thank you for using my software"
 msgstr ""
 
-#: kernel-install.c:311
+#: kernel-install.c:328
 msgid "Please keep it free for everyone"
 msgstr ""
 
-#: kernel-install.c:312
+#: kernel-install.c:329
 msgid "Alexia."
 msgstr ""
 
-#: kernel-install.c:328
+#: kernel-install.c:345
 #, c-format
 msgid "Could not determine home directory\n"
 msgstr ""
 
-#: kernel-install.c:337
+#: kernel-install.c:354
 #, c-format
 msgid ""
 "Unsupported Linux distribution. Currently only Debian-based systems are "
 "supported.\n"
 msgstr ""
 
-#: kernel-install.c:341
+#: kernel-install.c:358
 #, c-format
 msgid "Detected distribution: %s\n"
 msgstr ""
 
-#: kernel-install.c:344
+#: kernel-install.c:361
 #, c-format
 msgid "Whiptail installation failed. Continuing with text mode...\n"
 msgstr ""
 
-#: kernel-install.c:348
+#: kernel-install.c:365
 #, c-format
 msgid "Installation cancelled by user.\n"
 msgstr ""
 
-#: kernel-install.c:354
+#: kernel-install.c:371
 #, c-format
 msgid "Creating build directory: %s\n"
 msgstr ""
 
-#: kernel-install.c:362
+#: kernel-install.c:379
 #, c-format
 msgid "Path exists but is not a directory: %s\n"
 msgstr ""
 
-#: kernel-install.c:366
+#: kernel-install.c:383
 msgid "Failed to create build directory"
 msgstr ""
 
-#: kernel-install.c:372
+#: kernel-install.c:389
 #, c-format
 msgid "Installing required packages for %s...\n"
 msgstr ""
 
-#: kernel-install.c:382
+#: kernel-install.c:399
 #, c-format
 msgid "Fetching latest kernel version from kernel.org...\n"
 msgstr ""
 
-#: kernel-install.c:396
+#: kernel-install.c:413
 #, c-format
 msgid "Could not fetch latest kernel version.\n"
 msgstr ""
 
-#: kernel-install.c:402
+#: kernel-install.c:419
 #, c-format
 msgid "Empty version string.\n"
 msgstr ""
 
-#: kernel-install.c:413
+#: kernel-install.c:430
 #, c-format
 msgid "Latest stable kernel: %s\n"
 msgstr ""
 
-#: kernel-install.c:441
+#: kernel-install.c:458
 #, c-format
 msgid "Building and installing kernel for %s...\n"
 msgstr ""
 
-#: kernel-install.c:445
+#: kernel-install.c:462
 #, c-format
 msgid "Updating bootloader for %s...\n"
 msgstr ""
 
-#: kernel-install.c:462
+#: kernel-install.c:479
 #, c-format
 msgid "Build files cleaned up.\n"
 msgstr ""

@@ -18,6 +18,7 @@
 #include "distro/debian.h"
 #include "distro/linuxmint.h"
 #include "distro/fedora.h"
+#include "distro/distros.h"
 
 #define APP_VERSION "1.2.5"
 #define _(string) gettext(string)
@@ -146,24 +147,29 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
             wrefresh(bar_win);
         }
 
-// cuando empieza a construir los .deb terminamos la barra por que ya casi termina. 
-// igual podria mejorar esto en breve. Hay que darle forma. Fue bastante laburo por hoy.
-// - Alexia.
-        if (strstr(line, "dpkg-deb: building package") || strstr(line, "Processing files:")) {
-            packaging_started = 1;
-            break; 
+        // Check for packaging start
+        // "dpkg-buildpackage" runs at the start, so we must wait for "dpkg-deb" which runs at the end.
+        // "Processing files:" is typical for rpmbuild end phase.
+        if (!packaging_started) {
+            if (strstr(line, "dpkg-deb: building package")) {
+                packaging_started = 1;
+                werase(bar_win);
+                if (has_colors()) wattron(bar_win, COLOR_PAIR(2) | A_BOLD);
+                mvwprintw(bar_win, 0, 0, "%s", _("Building kernel and kernel headers .deb package. Please wait..."));
+                if (has_colors()) wattroff(bar_win, COLOR_PAIR(2) | A_BOLD);
+                wrefresh(bar_win);
+            } else if (strstr(line, "Processing files:")) {
+                packaging_started = 1;
+                werase(bar_win);
+                if (has_colors()) wattron(bar_win, COLOR_PAIR(2) | A_BOLD);
+                mvwprintw(bar_win, 0, 0, "%s", _("Building kernel .rpm package. Please wait..."));
+                if (has_colors()) wattroff(bar_win, COLOR_PAIR(2) | A_BOLD);
+                wrefresh(bar_win);
+            }
         }
     }
 
     endwin(); // Restaurar terminal
-    
-    if (packaging_started) {
-        printf(_("Packaging started. Switching to standard output...\n"));
-        while (fgets(line, sizeof(line), build_pipe)) {
-            printf("%s", line);
-        }
-    }
-
     return pclose(build_pipe);
 }
 
@@ -227,26 +233,37 @@ Distro detect_distro() {
     if (!fp) return DISTRO_UNKNOWN;
     
     char line[256];
+    Distro detected = DISTRO_UNKNOWN;
+
     while (fgets(line, sizeof(line), fp)) {
-        if (strstr(line, "ID=linuxmint")) {
-            fclose(fp);
-            return DISTRO_MINT;
-        } else if (strstr(line, "ID=ubuntu") || strstr(line, "ID=elementary") || strstr(line, "ID=pop") || strstr(line, "ID=zorin")) {
-            fclose(fp);
-            return DISTRO_MINT; // Tratar Ubuntu como Mint para certificados
-        } else if (strstr(line, "ID=debian") || strstr(line, "ID=goldendoglinux") || strstr(line, "ID=soplos")) {
-            fclose(fp);
-            return DISTRO_DEBIAN;
-        } else if (strstr(line, "ID=arch")) {
-            fclose(fp);
-            return DISTRO_ARCH;
-        } else if (strstr(line, "ID=fedora")) {
-            fclose(fp);
-            return DISTRO_FEDORA;
+        // Buscar la línea que comienza con ID=
+        if (strncmp(line, "ID=", 3) == 0) {
+            // Extraer el valor del ID (sin comillas y sin newline)
+            char *id_value = line + 3;
+            // Eliminar comillas si existen
+            if (id_value[0] == '"') {
+                id_value++;
+                char *end_quote = strchr(id_value, '"');
+                if (end_quote) *end_quote = '\0';
+            } else {
+                // Eliminar newline si no hay comillas
+                char *newline = strchr(id_value, '\n');
+                if (newline) *newline = '\0';
+            }
+
+            // Buscar en la tabla de distribuciones
+            for (int i = 0; distro_map[i].id != NULL; i++) {
+                if (strcmp(id_value, distro_map[i].id) == 0) {
+                    detected = distro_map[i].distro_type;
+                    break;
+                }
+            }
+            break; // Una vez que encontramos el ID, salimos del bucle
         }
     }
+    
     fclose(fp);
-    return DISTRO_UNKNOWN;
+    return detected;
 }
 
 
