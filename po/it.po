@@ -1,14 +1,14 @@
 # ITALIAN TRANSLATION.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# ALBANO BATTISTELLA <ALBANOBATTISTELLA@GMAIL.COM>, 2025.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-09 21:05-0300\n"
-"PO-Revision-Date: 2025-11-20 20:46+0200\n"
+"PO-Revision-Date: 2025-11-21 15:36+0200\n"
 "Last-Translator: Albano Battistella <albanobattistella@gmail.com>\n"
 "Language-Team: Italian <LL@li.org>\n"
 "Language: it\n"
@@ -23,7 +23,11 @@ msgstr "In esecuzione"
 #: kernel-install.c:30  
 #, c-format  
 msgid " Command failed: %s (exit %d)\n"  
-msgstr " Comando fallito: %s (uscita %d)\n"  
+msgstr " Comando fallito: %s (uscita %d)\n"
+
+#: kernel-install.c:133
+msgid "Progress:"
+msgstr "Avanzamento:"
       
 #: kernel-install.c:38  
 #, c-format  
