@@ -204,28 +204,33 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
         wprintw(log_win, "%s", line);
         wrefresh(log_win);
 
-        if (strstr(line, " CC ") || strstr(line, " LD ") || strstr(line, " AR ")) {
+        if (strstr(line, " CC ") || strstr(line, " LD ") || strstr(line, " AR ") ||
+            strstr(line, " SIGN ") || strstr(line, " INSTALL ") || strstr(line, " DEPMOD ") ||
+            strstr(line, " XZ ")) {
             current_count++;
             int percent = (current_count * 100) / total_files;
             if (percent > 100) percent = 100;
 
-            // Dibujar barra
-            werase(bar_win);
-            mvwprintw(bar_win, 0, 0, "%s [", _("Progress:"));
-            
-            int bar_width = width - 20; // Espacio para "Progress: " y " XXX%"
-            int filled_width = (percent * bar_width) / 100;
-            
-            if (has_colors()) wattron(bar_win, COLOR_PAIR(1));
-            for (int i = 0; i < bar_width; i++) {
-                if (i < filled_width) waddch(bar_win, '=');
-                else if (i == filled_width) waddch(bar_win, '>');
-                else waddch(bar_win, ' ');
+            // Solo dibujar la barra si NO estamos en etapa de empaquetado
+            // para evitar sobrescribir el mensaje de "Building package..."
+            if (!packaging_started) {
+                werase(bar_win);
+                mvwprintw(bar_win, 0, 0, "%s [", _("Progress:"));
+                
+                int bar_width = width - 20; // Espacio para "Progress: " y " XXX%"
+                int filled_width = (percent * bar_width) / 100;
+                
+                if (has_colors()) wattron(bar_win, COLOR_PAIR(1));
+                for (int i = 0; i < bar_width; i++) {
+                    if (i < filled_width) waddch(bar_win, '=');
+                    else if (i == filled_width) waddch(bar_win, '>');
+                    else waddch(bar_win, ' ');
+                }
+                if (has_colors()) wattroff(bar_win, COLOR_PAIR(1));
+                
+                wprintw(bar_win, "] %d%%", percent);
+                wrefresh(bar_win);
             }
-            if (has_colors()) wattroff(bar_win, COLOR_PAIR(1));
-            
-            wprintw(bar_win, "] %d%%", percent);
-            wrefresh(bar_win);
         }
 
         
