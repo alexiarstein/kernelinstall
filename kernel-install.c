@@ -112,12 +112,22 @@ int get_cpu_count() {
 }
 
 void get_load_avg(double *loads) {
+    char *old_locale = setlocale(LC_NUMERIC, NULL);
+    char *saved_locale = old_locale ? strdup(old_locale) : NULL;
+    
+    setlocale(LC_NUMERIC, "C");
+    
     FILE *fp = fopen("/proc/loadavg", "r");
     if (fp) {
         fscanf(fp, "%lf %lf %lf", &loads[0], &loads[1], &loads[2]);
         fclose(fp);
     } else {
         loads[0] = loads[1] = loads[2] = 0.0;
+    }
+    
+    if (saved_locale) {
+        setlocale(LC_NUMERIC, saved_locale);
+        free(saved_locale);
     }
 }
 
@@ -134,7 +144,7 @@ void draw_system_load(WINDOW *win, int cpu_count) {
     int width = getmaxx(win);
     
     if (has_colors()) wattron(win, A_BOLD);
-    mvwprintw(win, 1, (width - 11) / 2, "SYSTEM LOAD");
+    mvwprintw(win, 1, (width - 11) / 2, "%s", _("SYSTEM LOAD"));
     if (has_colors()) wattroff(win, A_BOLD);
     
     mvwhline(win, 2, 1, ACS_HLINE, width - 2);
@@ -160,12 +170,12 @@ void draw_system_load(WINDOW *win, int cpu_count) {
 
     // Stats numéricos
     int start_y = 7;
-    mvwprintw(win, start_y, 2, "Load Avg:");
+    mvwprintw(win, start_y, 2, "%s", _("Load Avg:"));
     mvwprintw(win, start_y + 1, 4, "1m : %.2f", loads[0]);
     mvwprintw(win, start_y + 2, 4, "5m : %.2f", loads[1]);
     mvwprintw(win, start_y + 3, 4, "15m: %.2f", loads[2]);
     
-    mvwprintw(win, start_y + 5, 2, "Cores: %d", cpu_count);
+    mvwprintw(win, start_y + 5, 2, "%s: %d", _("Cores"), cpu_count);
 
     wrefresh(win);
 }

@@ -317,3 +317,15 @@ msgstr "==========================================\n"
 #, c-format
 msgid "Configuring GoldendogLinux Signature...\n"
 msgstr "Configurando Firma GoldendogLinux...\n"
+
+#: kernel-install.c:147
+msgid "SYSTEM LOAD"
+msgstr "CARGA DEL SISTEMA"
+
+#: kernel-install.c:173
+msgid "Load Avg:"
+msgstr "Carga Promedio:"
+
+#: kernel-install.c:177
+msgid "Cores"
+msgstr "Núcleos"
