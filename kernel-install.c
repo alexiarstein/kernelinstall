@@ -236,9 +236,9 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
         
         if (!packaging_started) {
             // Detectar inicio de empaquetado (Debian/Mint)
-            if (strstr(line, "dpkg-deb: building package") || 
-                strstr(line, "dpkg-buildpackage") ||
-                strstr(line, "dpkg-gencontrol")) {
+            // Usamos solo "dpkg-deb: building package" porque es el paso final.
+            // Otros triggers como "dpkg-buildpackage" pueden aparecer al principio y confundir.
+            if (strstr(line, "dpkg-deb: building package")) {
                 
                 packaging_started = 1;
                 snprintf(current_status_msg, sizeof(current_status_msg), "%s", _("Building kernel and kernel headers .deb package. Please wait..."));
