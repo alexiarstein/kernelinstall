@@ -10,7 +10,7 @@
 
 void debian_install_dependencies() {
     run("sudo apt update && sudo apt install -y "
-        "build-essential libncurses-dev bison flex libssl-dev libelf-dev "
+        "build-essential libncurses-dev pkg-config libncursesw5-dev bison flex libssl-dev libelf-dev "
         "bc wget tar xz-utils gettext libc6-dev fakeroot curl git debhelper libdw-dev rsync locales");
 }
 

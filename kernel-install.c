@@ -36,7 +36,7 @@
 #include "distro/fedora.h"
 #include "distro/distros.h"
 
-#define APP_VERSION "1.3.0"
+#define APP_VERSION "1.3.2"
 #define _(string) gettext(string)
 #define BUBU "bubu" // menos pregunta dios y perdona
 
