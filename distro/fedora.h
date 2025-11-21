@@ -19,7 +19,7 @@ void fedora_build_and_install(const char* home, const char* version, const char*
     
     // Compilar generando RPMs
     snprintf(cmd, sizeof(cmd),
-             "cd %s && make -j$(nproc) rpm-pkg",
+             "cd %s && stdbuf -oL -eL make -j$(nproc) rpm-pkg",
              source_dir);
     run_build_with_progress(cmd, source_dir);
     
