@@ -122,7 +122,7 @@ void get_load_avg(double *loads) {
 }
 
 void draw_system_load(WINDOW *win, int cpu_count) {
-    double loads[3];
+    double loads[3] = {0.0, 0.0, 0.0};
     get_load_avg(loads);
     
     double current_usage = (loads[0] / cpu_count) * 100.0;
@@ -131,8 +131,7 @@ void draw_system_load(WINDOW *win, int cpu_count) {
     werase(win);
     box(win, 0, 0);
     
-    int width, height;
-    getmaxyx(win, height, width);
+    int width = getmaxx(win);
     
     if (has_colors()) wattron(win, A_BOLD);
     mvwprintw(win, 1, (width - 11) / 2, "SYSTEM LOAD");
