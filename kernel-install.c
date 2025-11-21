@@ -28,6 +28,9 @@
 #include <sys/stat.h>
 #include <libintl.h>
 #include <locale.h>
+#include <locale.h>
+#include <time.h>
+#include <sys/select.h>
 #include <ncurses.h>
 
 #include "distro/common.h"
@@ -36,7 +39,7 @@
 #include "distro/fedora.h"
 #include "distro/distros.h"
 
-#define APP_VERSION "1.3.2"
+#define APP_VERSION "1.3.5"
 #define _(string) gettext(string)
 #define BUBU "bubu" // menos pregunta dios y perdona
 
@@ -70,7 +73,8 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
     int total_files = count_source_files(source_dir);
     // Ajuste heurístico: Normalmente solo se compila alrededor del 60% de los drivers/archivos
     // en una configuración típica (make oldconfig). Esto hace que la barra sea más realista.
-    total_files = (total_files * 60) / 100;
+    // UPDATE: Aumentamos a 85% para que la barra vaya más lento al principio y no llegue al 100% antes de tiempo.
+    total_files = (total_files * 85) / 100;
     if (total_files == 0) total_files = 1;
 
     initscr();
@@ -137,10 +141,24 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
     char line[1024];
     int current_count = 0;
     int packaging_started = 0;
+    time_t packaging_start_time = 0;
     char current_status_msg[256] = ""; 
 
+    int fd = fileno(build_pipe);
+    fd_set readfds;
+    struct timeval timeout; 
+
     while (1) {
-        if (fgets(line, sizeof(line), build_pipe) == NULL) {
+        FD_ZERO(&readfds);
+        FD_SET(fd, &readfds);
+        
+        // Timeout de 1 segundo para actualizar el reloj
+        timeout.tv_sec = 1;
+        timeout.tv_usec = 0;
+        
+        int ret = select(fd + 1, &readfds, NULL, NULL, &timeout);
+        
+        if (ret == -1) {
             if (errno == EINTR) {
                 clearerr(build_pipe);
                 endwin();
@@ -200,6 +218,38 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
                 continue;
             }
             break;
+        } else if (ret == 0) {
+            // Timeout: Actualizar reloj si estamos empaquetando
+            if (packaging_started) {
+                time_t now = time(NULL);
+                double elapsed = difftime(now, packaging_start_time);
+                int hours = (int)elapsed / 3600;
+                int minutes = ((int)elapsed % 3600) / 60;
+                int seconds = (int)elapsed % 60;
+                
+                // Determinar mensaje base (DEB o RPM)
+                const char* base_msg = _("Building kernel and kernel headers .deb package. Please wait...");
+                if (strstr(current_status_msg, "rpm")) {
+                    base_msg = _("Building kernel .rpm package. Please wait...");
+                }
+
+                snprintf(current_status_msg, sizeof(current_status_msg), 
+                         "%s [ %s: %02d:%02d:%02d ]", 
+                         base_msg,
+                         _("Elapsed"), hours, minutes, seconds);
+                
+                werase(bar_win);
+                if (has_colors()) wattron(bar_win, COLOR_PAIR(2) | A_BOLD);
+                mvwprintw(bar_win, 0, 0, "%s", current_status_msg);
+                if (has_colors()) wattroff(bar_win, COLOR_PAIR(2) | A_BOLD);
+                wrefresh(bar_win);
+            }
+            continue;
+        }
+
+        // Hay datos para leer
+        if (fgets(line, sizeof(line), build_pipe) == NULL) {
+            break;
         }
         wprintw(log_win, "%s", line);
         wrefresh(log_win);
@@ -209,7 +259,17 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
             strstr(line, " XZ ")) {
             current_count++;
             int percent = (current_count * 100) / total_files;
-            if (percent > 100) percent = 100;
+            
+            // Pisos de progreso para fases finales
+            if (strstr(line, " LD ")) {
+                if (percent < 90) percent = 90;
+            }
+            if (strstr(line, " XZ ") || strstr(line, " INSTALL ")) {
+                if (percent < 95) percent = 95;
+            }
+
+            // Cap al 99% hasta que empiece el empaquetado real
+            if (percent > 99) percent = 99;
 
             // Solo dibujar la barra si NO estamos en etapa de empaquetado
             // para evitar sobrescribir el mensaje de "Building package..."
@@ -241,6 +301,7 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
             if (strstr(line, "dpkg-deb: building package")) {
                 
                 packaging_started = 1;
+                packaging_start_time = time(NULL);
                 snprintf(current_status_msg, sizeof(current_status_msg), "%s", _("Building kernel and kernel headers .deb package. Please wait..."));
                 werase(bar_win);
                 if (has_colors()) wattron(bar_win, COLOR_PAIR(2) | A_BOLD);
@@ -249,6 +310,7 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
                 wrefresh(bar_win);
             } else if (strstr(line, "Processing files:") || strstr(line, "rpmbuild")) {
                 packaging_started = 1;
+                packaging_start_time = time(NULL);
                 snprintf(current_status_msg, sizeof(current_status_msg), "%s", _("Building kernel .rpm package. Please wait..."));
                 werase(bar_win);
                 if (has_colors()) wattron(bar_win, COLOR_PAIR(2) | A_BOLD);
@@ -256,6 +318,30 @@ int run_build_with_progress(const char *cmd, const char *source_dir) {
                 if (has_colors()) wattroff(bar_win, COLOR_PAIR(2) | A_BOLD);
                 wrefresh(bar_win);
             }
+        } else {
+            // Si ya empezó el empaquetado, actualizamos el timer con cada línea de log
+            time_t now = time(NULL);
+            double elapsed = difftime(now, packaging_start_time);
+            int hours = (int)elapsed / 3600;
+            int minutes = ((int)elapsed % 3600) / 60;
+            int seconds = (int)elapsed % 60;
+            
+            // Determinar mensaje base (DEB o RPM)
+            const char* base_msg = _("Building kernel and kernel headers .deb package. Please wait...");
+            if (strstr(current_status_msg, "rpm")) {
+                base_msg = _("Building kernel .rpm package. Please wait...");
+            }
+
+            snprintf(current_status_msg, sizeof(current_status_msg), 
+                     "%s [ %s: %02d:%02d:%02d ]", 
+                     base_msg,
+                     _("Elapsed"), hours, minutes, seconds);
+            
+            werase(bar_win);
+            if (has_colors()) wattron(bar_win, COLOR_PAIR(2) | A_BOLD);
+            mvwprintw(bar_win, 0, 0, "%s", current_status_msg);
+            if (has_colors()) wattroff(bar_win, COLOR_PAIR(2) | A_BOLD);
+            wrefresh(bar_win);
         }
     }
 
