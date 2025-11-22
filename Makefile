@@ -13,7 +13,7 @@ ifeq ($(NCURSES_LIBS),)
     NCURSES_LIBS = -lncursesw
 endif
 
-CFLAGS = -Wall -Wextra -g -D_FORTIFY_SOURCE=2 $(NCURSES_CFLAGS)
+CFLAGS = -Wall -Wextra -O2 -g -D_FORTIFY_SOURCE=2 $(NCURSES_CFLAGS)
 LDFLAGS = $(NCURSES_LIBS)
 OBJ = kernel-install.o
 TARGET = kernel-installer
