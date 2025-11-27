@@ -28,6 +28,12 @@ static DistroMap distro_map[] = {
     {"elementary", DISTRO_MINT},
     {"pop", DISTRO_MINT},
     {"zorin", DISTRO_MINT},
+    {"devuan", DISTRO_DEBIAN},
+    {"quirinux", DISTRO_DEBIAN},
+    {"etertics", DISTRO_DEBIAN},
+    {"goblin", DISTRO_DEBIAN},
+    {"gobmis", DISTRO_DEBIAN},
+    {"huayra", DISTRO_DEBIAN},
 
     // Otras distribuciones
     {"arch", DISTRO_ARCH},
