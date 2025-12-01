@@ -797,7 +797,7 @@ int main(void) {
     char fetch_cmd[1024];
     snprintf(fetch_cmd, sizeof(fetch_cmd),
              "curl -s https://www.kernel.org/ | "
-             "grep -A1 'latest_link' | grep -oE '[0-9]+\\.[0-9]+\\.[0-9]+' | "
+             "grep -A1 'latest_link' | grep -oE '[0-9]+\\.[0-9]+(\\.[0-9]+)?' | "
              "head -1 > %s", tmp_file);
     run(fetch_cmd);
 
